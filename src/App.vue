@@ -2,7 +2,7 @@
   <div class="common-layout">
     <el-container>
       <!-- 头部 -->
-      <el-header height="225px">
+      <el-header height="250px">
         <AppHeader
           :DeliveryDrone_Property_DroneDeliveryOrder="
             DeliveryDrone_Property_DroneDeliveryOrder
@@ -16,6 +16,7 @@
           :Delivery_Locker_Property_RecycleDelivery="
             Delivery_Locker_Property_RecycleDelivery
           "
+          :Box_owner="Box_owner"
         />
       </el-header>
       <!-- 主体内容 -->
@@ -97,6 +98,7 @@
                 :OutdoorDeliveryCar_Property_OutdoorDeliveryOrder="
                   OutdoorDeliveryCar_Property_OutdoorDeliveryOrder
                 "
+                :Box_owner="Box_owner"
               />
             </el-col>
             <!-- 右侧新增的可视化部分 -->
@@ -201,6 +203,7 @@ export default {
       Delivery_Locker_Property_RecycleDelivery: "", // 新增回收交付数据
       IndoorDeliveryCar_Property_IndoorDeliveryOrder: "", // 新增室内车交付订单数据
       OutdoorDeliveryCar_Property_OutdoorDeliveryOrder: "", // 新增室外车交付订单数据
+      Box_owner: "", // 新增 Box_owner 数据
     };
   },
   methods: {
@@ -233,6 +236,9 @@ export default {
       if (file.includes("OutdoorCarState")) {
         this.OutdoorDeliveryCar_Property_OutdoorCarState = contentString;
       }
+      if (file.includes("Box_owner")) {
+        this.Box_owner = contentString;
+      }
     },
   },
 };
@@ -248,7 +254,6 @@ export default {
 .left1 .left2 .left3 {
   height: 250px;
 }
-
 .right1,
 .right2,
 .right3 {

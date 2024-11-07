@@ -33,6 +33,10 @@ export default {
       type: [String, null],
       required: true,
     },
+    Box_owner: {
+      type: [String, null],
+      required: true,
+    },
   },
   data() {
     return {

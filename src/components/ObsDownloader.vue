@@ -1,7 +1,6 @@
 <template>
   <!-- <div>
     <h1>OBS 数据仪表盘</h1>
-
     <div>
       <h2>高频更新文件</h2>
       <div v-for="(content, index) in highFrequencyFileContents" :key="index">
@@ -36,6 +35,7 @@ export default {
       'IndoorDeliveryCar_Property/IndoorDeliveryCar_Property_IndoorCarState.csv',
       'OutdoorDeliveryCar_Property/OutdoorDeliveryCar_Property_OutdoorCarState.csv',
       'DeliveryDrone_Property/DeliveryDrone_Property_DroneState.csv',
+      'Box/Box_owner.csv',
     ];
 
     // 低频更新的文件列表
@@ -83,7 +83,13 @@ export default {
       setInterval(() => {
         highFrequencyFileContents.value = []; // 清空旧的内容
         fetchHighFrequencyFiles();
-      }, 600000); // 设置刷新频率为10分钟
+      }, 600000); // 10分钟
+
+      // 定期刷新低频更新文件
+      setInterval(() => {
+        lowFrequencyFileContents.value = []; 
+        fetchLowFrequencyFiles();
+      }, 1800000); // 30分钟
     });
 
     return {

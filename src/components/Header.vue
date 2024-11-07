@@ -1,17 +1,17 @@
 <template>
-  <el-header class="custom-header" height="105%">
+  <el-header class="custom-header">
     <div class="header-container">
       <el-row :gutter="18" class="main-row">
         <!-- First Column: Title and Statistic Cards -->
         <el-col :span="18" class="content-container">
           <!-- Title Section -->
-          <div class="title-container" style="text-align: left">
-            <h2 style="font-size: 2.5em">
+          <div class="title-container">
+            <h2 class="dashboard-title">
               <span style="color: #86a779">Smart GBX Dashboard </span>
               <span style="color: #44652a">for HKUST(GZ) </span>
               <span style="color: #76c850">2024</span>
             </h2>
-            <hr style="border-top: 2px solid #cbebc4; width: 65%; margin: -10px 0 0 0" />
+            <hr style="border-top: 2px solid #cbebc4; width: 65%; margin: 10px 0 0 20px" />
           </div>
 
           <!-- Statistic Cards Layout -->
@@ -130,11 +130,10 @@
 
         <!-- Second Column: SVG Image -->
         <el-col :span="6" class="svg-container">
-
           <img
             src="@/assets/Header.svg"
             alt="Descriptive Text"
-            style="width: 75% ;margin: 20px 0 0 0"
+            class="header-image"
           />
         </el-col>
       </el-row>
@@ -142,7 +141,8 @@
   </el-header>
 </template>
 
-<script lang="ts" setup>
+<script setup>
+import { defineProps } from 'vue';
 import {
   ArrowRight,
   CaretBottom,
@@ -152,37 +152,82 @@ import {
   CaretTop,
   Warning,
 } from "@element-plus/icons-vue";
+
+const props = defineProps({
+  DeliveryDrone_Property_DroneDeliveryOrder: {
+    type: String,
+    default: "",
+  },
+  IndoorDeliveryCar_Property_IndoorDeliveryOrder: {
+    type: String,
+    default: "",
+  },
+  OutdoorDeliveryCar_Property_OutdoorDeliveryOrder: {
+    type: String,
+    default: "",
+  },
+  Delivery_Locker_Property_RecycleDelivery: {
+    type: String,
+    default: "",
+  },
+  Box_owner: {
+    type: String,
+    default: "",
+  },
+});
 </script>
 
 <style scoped>
 .custom-header {
   background-color: #E3F0D8;
-
   color: #2f6d36;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  border-bottom-left-radius: 30px;
-  border-bottom-right-radius: 30px;
-  border-top-left-radius: 30px;
-  border-top-right-radius: 30px;
+  justify-content: flex-start;
+  padding: 20px;
+  border-radius: 30px;
+  height: 100%;
+}
+
+.header-container {
+  height: 100%;
+}
+
+.dashboard-title {
+  font-size: 2.5em;
+  margin: 0;
+  line-height: 1.2;
+  text-align: left;
+  width: 100%;
 }
 
 .title-container {
-  margin-bottom: 5px;
-  margin-top: -5px;
+  margin-bottom: 15px;
+  margin-top: 0;
+  padding-left: 20px;
 }
 
-.statistic-row {
-  margin-top: 15px;
-  margin-bottom: 5px;
+.header-image {
+  width: 75%;
+  max-height: 200px;
+  object-fit: contain;
+  margin-top: 10px;
 }
 
 .svg-container {
   display: flex;
   justify-content: center;
-  align-items: right;
-  height: 90%;
+  align-items: flex-start;
+  height: 100%;
 }
 
+.statistic-row {
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.statistic-card {
+  padding: 10px;
+  height: auto;
+}
 </style>
