@@ -208,7 +208,7 @@ const mealBoxRecycling = computed(() => {
   padding: 10px;
   border-radius: 30px;
   height: auto;
-  min-height: 150px;
+  min-height: 210px;
 }
 
 .header-container {
