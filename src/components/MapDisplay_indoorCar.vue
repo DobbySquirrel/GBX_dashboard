@@ -146,7 +146,7 @@ export default {
       symbol :'pin',
       symbolSize: 40,
       itemStyle: {
-        color: 'black'
+        color: '#999999'
       },
       encode: {
         tooltip: 2
