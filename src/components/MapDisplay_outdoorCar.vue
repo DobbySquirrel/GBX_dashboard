@@ -95,7 +95,7 @@ overallView:false
       // 指定区域数据格式化处理;
       var ptArr = [];
       // 添加泡泡点
-      const bubblelabel = [
+      const bubblelabel: [number, number, string][] = [
         [113.48868, 22.893414, "香港科技大学(广州)-行政楼"],
         [113.489248, 22.895125, "香港科技大学1F食堂"],
         [113.491074, 22.890642, "香港科技大学(广州)-南宿舍区"],
@@ -112,15 +112,15 @@ overallView:false
       ];
 
       //添加label
-      for (var i = 0; i < bubblelabel.length; i++) {
-        var pt = new BMapGL.Point(bubblelabel[i][0], bubblelabel[i][1]);
-        var marker = new BMapGL.Marker(pt);
+      for (let i = 0; i < bubblelabel.length; i++) {
+        const pt = new BMapGL.Point(bubblelabel[i][0], bubblelabel[i][1]);
+        const marker = new BMapGL.Marker(pt);
         // 创建文本标注对象，设置坐标和标签文字
-        var labelopts = {
+        const labelopts = {
           position: pt, // 使用坐标点pt作为标签的位置
           offset: new BMapGL.Size(0, 0), // 设置文本偏移量
         };
-        var label = new BMapGL.Label(bubblelabel[i][2], labelopts); // 设置标签内容为对应名称
+        const label = new BMapGL.Label(bubblelabel[i][2], labelopts); // 设置标签内容为对应名称
         label.setStyle({
           color: "#fff",
           backgroundColor: "rgba(0, 0, 0, 0.3)",
