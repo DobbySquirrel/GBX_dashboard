@@ -47,7 +47,7 @@
                   </template>
                   <template #suffix>
                     <el-text class="mx-1" style="font-size: 1em; color: #86a779"
-                      ><span style="margin-left: 10px"></span>CO2</el-text
+                      ><span style="margin-left: 10px"></span>g CO2</el-text
                     >
                   </template>
                 </el-statistic>
@@ -56,7 +56,7 @@
             
             <el-col :span="6" class="statistic-col">
               <div style="font-size: 1em; color: #44652a;">
-                = {{ energyCost / 10 }} boxes * 10g CO2 per box
+                = {{ energyCost / 0.5267 }} boxes * 0.5267g per box
               </div>
               <div style="font-size: 0.8em; color: #44652a; margin-top: 5px;">
                 Notes: <br>1. Assumed 20 cycles for green boxes <br>2. Carbon reduction is compared with corrugated boxes of the same size and transport distance.
@@ -167,8 +167,8 @@ const energyCost = computed(() => {
       return product_id === '66dd1bb4eff8e33e5f3f233f';
     }).length;
     
-    // 返回数量 * 10
-    return count * 10;
+    // 返回数量 * 0.5267
+    return count * 0.5267;
   } catch (error) {
     console.error('Error calculating energy cost:', error);
     return 0;
@@ -187,7 +187,7 @@ const mealBoxRecycling = computed(() => {
     const count = dataRows.filter(line => {
       const values = line.split(",");
       const status = values[3]?.trim();
-      return status === 'RecycleDelivery';
+      return status === 'RecycleInDelivery';
     }).length;
 
     return count;
@@ -207,9 +207,48 @@ const mealBoxRecycling = computed(() => {
   justify-content: flex-start;
   padding: 10px;
   border-radius: 30px;
-  height: 100%;
+  height: auto;
+  min-height: 150px;
 }
 
+.header-container {
+  width: 100%;
+  height: auto;
+}
+
+.main-row {
+  width: 100%;
+  height: auto;
+}
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+}
+
+.statistic-row {
+  width: 100%;
+  height: auto;
+  margin-top: 10px;
+}
+
+.statistic-card {
+  height: auto;
+  padding: 10px;
+}
+
+.svg-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+}
+
+.header-image {
+  max-width: 100%;
+  height: auto;
+}
 
 .dashboard-title {
   font-size: 2em;

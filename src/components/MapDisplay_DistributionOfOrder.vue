@@ -1,8 +1,5 @@
 <template>
   <div>
-    <div class="title-container">
-      <el-text class="mx-1" style="font-size: 18px; color: #44652a">Order Distribution Map</el-text>
-    </div>
     <div id="Container_Order_Distribution"></div>
   </div>
 </template>
@@ -51,12 +48,16 @@ export default {
   },
   mounted() {
     this.initChart();
+    window.addEventListener('resize', this.handleResize);
     if (this.DeliveryDrone_Property_DroneDeliveryOrder && 
         this.IndoorDeliveryCar_Property_IndoorDeliveryOrder && 
         this.OutdoorDeliveryCar_Property_OutdoorDeliveryOrder) {
       this.calculateAreaCounts();
       this.updateChart();
     }
+  },
+  unmounted() {
+    window.removeEventListener('resize', this.handleResize);
   },
   methods: {
     onDataUpdate() {
@@ -169,15 +170,21 @@ export default {
     },
 
     updateChart() {
-      // 计算数据中的最大值
       const maxValue = Math.max(...this.unifiedData.map(item => item.value || 0));
       
       const option = {
+        title: {
+          text: "Order Distribution Map",
+          left: "center",
+          textStyle: {
+            color: "#44652a",
+          },
+          top: "0%",
+        },
         tooltip: {},
         visualMap: {
           min: 0,
           max: maxValue > 0 ? maxValue : 10, // 使用实际数据的最大值
-          itemHeight: 250,
           orient: "horizontal",
           text: ["", "Order"],
           realtime: true,
@@ -194,7 +201,7 @@ export default {
           },
         },
         grid: {
-          top: "100%",
+          top: "60%",
         },
         series: [
           {
@@ -215,6 +222,12 @@ export default {
       if (this.myChart) {
         this.myChart.setOption(option);
       }
+    },
+
+    handleResize() {
+      if (this.myChart) {
+        this.myChart.resize();
+      }
     }
   }
 };
@@ -222,11 +235,9 @@ export default {
 
 <style scoped>
 #Container_Order_Distribution {
-  width: 100%;
-  height: 205px;
-}
-.title-container {
-  text-align: center;
-  font-weight: bold;
+  width: 90%;
+  height: 70%;
+  min-height: 200px;
+  padding: 5px;
 }
 </style>

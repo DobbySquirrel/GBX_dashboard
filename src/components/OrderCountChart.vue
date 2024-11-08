@@ -1,5 +1,7 @@
 <template>
-  <div id="OrderCountChart"></div>
+  <div class="chart-container">
+    <div id="OrderCountChart"></div>
+  </div>
 </template>
 
 <script>
@@ -50,6 +52,8 @@ return{
   },
   mounted() {
      this.initChart(); 
+    // 添加窗口大小变化监听
+    window.addEventListener('resize', this.handleResize);
     if (this.DeliveryDrone_Property_DroneDeliveryOrder && this.IndoorDeliveryCar_Property_IndoorDeliveryOrder && this.OutdoorDeliveryCar_Property_OutdoorDeliveryOrder) {
       this.unifiedData = this.parseCsvData(
         this.DeliveryDrone_Property_DroneDeliveryOrder,
@@ -59,6 +63,10 @@ return{
       this.updateChart();
     }
 },
+  unmounted() {
+    // 组件销毁时移除监听
+    window.removeEventListener('resize', this.handleResize);
+  },
   methods:{
         onDataUpdate() {
     // 检查所有本地属性是否都有最新数据
@@ -196,7 +204,7 @@ updateChart() {
     grid: {
       left: '3%',
       right: '10%',
-      bottom: '5%',
+      bottom: 0,
       top: '18%',
       containLabel: true,
     },
@@ -256,6 +264,12 @@ updateChart() {
   };
 
   this.myChart.setOption(option);
+},
+
+handleResize() {
+  if (this.myChart) {
+    this.myChart.resize();
+  }
 }
 
     }
@@ -265,8 +279,17 @@ updateChart() {
 </script>
 
 <style scoped>
+.chart-container {
+  width: 100%;
+  height: 28vh; /* 修改为25vh以占据视窗高度的25% */
+  display: flex;
+  flex-direction: column;
+}
+
 #OrderCountChart {
   width: 100%;
-  height: 225px; 
+  height: 100%;
+  flex: 1;
+  min-height: 150px; /* 可以适当调整最小高度 */
 }
 </style>

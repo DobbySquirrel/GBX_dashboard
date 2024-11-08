@@ -20,7 +20,7 @@
         />
       </el-header>
       <!-- 主体内容 -->
-      <el-main height="750px">
+      <el-main>
         <div>
           <el-row :gutter="10">
             <!-- 左侧部分 -->
@@ -217,27 +217,75 @@ export default {
 };
 </script>
 <style>
-/* 主体内容布局 */
+/* 添加 el-container 相关样式 */
+.el-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  height: auto;
+  overflow: visible;
+}
+
+/* 确保 header 不会与内容重叠 */
+.el-header {
+  position: relative;
+  flex-shrink: 0;  /* 防止header被压缩 */
+  height: 25vh !important; /* 设置为视窗高度的20% */
+  padding: 10px;
+
+}
+
+/* 确保主体内容正确显示 */
+.el-main {
+  flex: 1;
+  height: auto;
+  padding: 10px;
+  overflow: visible;
+}
+
+/* 保持原有样式 */
 .card {
   padding: 10px;
   background-color: white;
   border-radius: 10px;
-  margin: 5px 0px; /* 上下为 10px，左右为 0px */
-}
-.left1, .left2, .left3 {
-  height: 225px;
+  margin: 5px 0px;
+  height: auto;
+  min-height: 200px;
 }
 
-.right1, .right2, .right3 {
-  height: 225px;
+.left1, .left3 {
+  height: 25vh; /* 修改为25vh以占据视窗高度的25% */
+  min-height: 150px; /* 可以适当调整最小高度 */
+}
+.left2 {
+  height: 28vh; /* 修改为25vh以占据视窗高度的25% */
+  min-height: 150px; /* 可以适当调整最小高度 */
+}
+
+.right1 {
+  height: 15vh; /* 修改为25vh以占据视窗高度的25% */
+  min-height: 150px; /* 设置最小高度 */
+}
+ .right2 {
+  height: 25vh; /* 修改为25vh以占据视窗高度的25% */
+  min-height: 150px; /* 设置最小高度 */
+}
+.right3 {
+  height: 35vh; /* 修改为25vh以占据视窗高度的25% */
+  min-height: 150px; /* 设置最小高度 */
 }
 .middle {
-  height: 745px;
+  min-height: 745px;
+  height: auto;
 }
 
 .common-layout {
   background-color: rgba(211, 211, 211, 0.278);
   border-radius: 30px;
+  min-height: 100vh;
+  height: auto;
+  padding: 10px;
+  overflow: visible;
 }
 
 

@@ -1,5 +1,7 @@
 <template>
-  <div id="OccupancyChart"></div>
+  <div class="chart-container">
+    <div id="OccupancyChart"></div>
+  </div>
 </template>
 
 <script>
@@ -55,8 +57,13 @@ watch: {
 },
 
   mounted() {
-     this.initChart(); 
-    if (this.OutdoorDeliveryCar_Property_OutdoorCarState && this.IndoorDeliveryCar_Property_IndoorCarState && this.DeliveryDrone_Property_DroneState && this.Delivery_Locker_Property_InputDelivery) {
+    this.initChart();
+    // 添加窗口大小变化监听
+    window.addEventListener('resize', this.handleResize);
+    if (this.OutdoorDeliveryCar_Property_OutdoorCarState && 
+        this.IndoorDeliveryCar_Property_IndoorCarState && 
+        this.DeliveryDrone_Property_DroneState && 
+        this.Delivery_Locker_Property_InputDelivery) {
       this.parseCsvData(
         this.OutdoorDeliveryCar_Property_OutdoorCarState,
         this.IndoorDeliveryCar_Property_IndoorCarState,
@@ -65,6 +72,12 @@ watch: {
       );
     }
   },
+
+  unmounted() {
+    // 组件销毁时移除监听
+    window.removeEventListener('resize', this.handleResize);
+  },
+
   methods: {
     onDataUpdate() {
     // 检查所有本地属性是否都有最新数据
@@ -319,15 +332,29 @@ updateChart() {
   };
 
   this.myChart.setOption(option);
-}
+},
 
+    handleResize() {
+      if (this.myChart) {
+        this.myChart.resize();
+      }
+    },
   }
 };
 </script>
 
 <style scoped>
+.chart-container {
+  width: 100%;
+  height: 25vh; /* 修改为25vh以占据视窗高度的25% */
+  display: flex;
+  flex-direction: column;
+}
+
 #OccupancyChart {
   width: 100%;
-  height: 225px;
+  height: 100%;
+  flex: 1;
+  min-height: 150px; /* 可以适当调整最小高度 */
 }
 </style>

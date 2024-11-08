@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="chart-container">
     <div id="LockerStatusPieChart"></div>
   </div>
 </template>
@@ -23,7 +23,8 @@ export default {
         'DroneDeliveryOrder': 'Delivering',
         'InputDelivery': 'Deposit',
         'OutputDelivery': 'Pickup',
-        'RecycleDelivery': 'Recycled'
+        'RecycleInDelivery': 'RecycleIn',
+        'RecycleOutDelivery': 'RecycleOut',
       }
     };
   },
@@ -40,6 +41,13 @@ export default {
   mounted() {
     if (this.Box_owner) {
       this.updateChartData(this.Box_owner);
+    }
+    window.addEventListener('resize', this.handleResize);
+  },
+  unmounted() {
+    window.removeEventListener('resize', this.handleResize);
+    if (this.myChart) {
+      this.myChart.dispose();
     }
   },
   methods: {
@@ -73,6 +81,14 @@ export default {
       return Object.values(latestStatuses);
     },
 
+    handleResize() {
+      const chartDom = document.getElementById("LockerStatusPieChart");
+      if (chartDom) {
+        const chartInstance = echarts.init(chartDom);
+        chartInstance.resize();
+      }
+    },
+
     renderStatusPieChart(statuses) {
       const statusCount = statuses.reduce((acc, status) => {
         acc[status] = (acc[status] || 0) + 1;
@@ -82,7 +98,11 @@ export default {
       const data = Object.entries(statusCount).map(([name, value]) => ({
         value,
         name,
-        itemStyle: { color: name === 'Recycled' ? "rgba(145, 204, 117, 0.5)" : "rgba(250, 200, 88, 0.5)" }
+        itemStyle: { 
+          color: (name === 'RecycleIn' || name === 'RecycleOut') 
+            ? "rgba(145, 204, 117, 0.5)"  // 绿色 - 回收相关状态
+            : "rgba(250, 200, 88, 0.5)"   // 黄色 - 其他状态
+        }
       }));
 
       var chartDom = document.getElementById("LockerStatusPieChart");
@@ -104,7 +124,7 @@ export default {
             name: "Package Status",
             type: "pie",
             radius: ["20%", "35%"],
-            center: ["50%", "25%"],
+            center: ["50%", "30%"],
             itemStyle: {
               borderRadius: 6,
               borderColor: "#fff",
@@ -133,14 +153,24 @@ export default {
         ],
       };
       myChart.setOption(option);
+      this.myChart = myChart;
     },
   },
 };
 </script>
 
 <style scoped>
+.chart-container {
+  width: 100%;
+  height: 40vh;
+  display: flex;
+  flex-direction: column;
+}
+
 #LockerStatusPieChart {
   width: 100%;
-  height: 500px;
+  height: 100%;
+  flex: 1;
+  min-height: 300px;
 }
 </style>

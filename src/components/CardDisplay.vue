@@ -3,7 +3,7 @@
     <el-table
       :data="sortedCards"
       style="width: 100%; border-radius: 10px"
-      max-height="150"
+      :max-height="tableHeight"
       :row-class-name="tableRowClassName"
     >
       <el-table-column prop="event_time" label="Time" sortable />
@@ -32,7 +32,8 @@ export default {
         'InputDelivery': 'Locker Deposit',
         'OutputDelivery': 'Locker Pickup',
         'RecycleDelivery': 'Locker Recycling'
-      }
+      },
+      tableHeight: '20vh'
     };
   },
   computed: {
@@ -124,6 +125,8 @@ export default {
 <style>
 .table-display {
   margin: 5px;
+  height: 20vh;
+  min-height: 200px;
 }
 
 .el-table {
