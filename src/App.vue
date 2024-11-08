@@ -2,7 +2,7 @@
   <div class="common-layout">
     <el-container>
       <!-- 头部 -->
-      <el-header height="250px">
+      <el-header height="200px">
         <AppHeader
           :DeliveryDrone_Property_DroneDeliveryOrder="
             DeliveryDrone_Property_DroneDeliveryOrder
@@ -22,7 +22,7 @@
       <!-- 主体内容 -->
       <el-main height="750px">
         <div>
-          <el-row :gutter="20">
+          <el-row :gutter="10">
             <!-- 左侧部分 -->
             <el-col :span="5" class="left">
               <!-- 左上一: 占用率 -->
@@ -89,15 +89,7 @@
               />
 
               <CardDisplay
-                :DeliveryDrone_Property_DroneDeliveryOrder="
-                  DeliveryDrone_Property_DroneDeliveryOrder
-                "
-                :IndoorDeliveryCar_Property_IndoorDeliveryOrder="
-                  IndoorDeliveryCar_Property_IndoorDeliveryOrder
-                "
-                :OutdoorDeliveryCar_Property_OutdoorDeliveryOrder="
-                  OutdoorDeliveryCar_Property_OutdoorDeliveryOrder
-                "
+            
                 :Box_owner="Box_owner"
               />
             </el-col>
@@ -105,39 +97,20 @@
             <el-col :span="5" class="right">
               <!-- 右上一: 速度数据图表 -->
               <div class="right1 card">
-                <!-- <MapDisplay_drone
-                  :OutdoorDeliveryCar_Property_OutdoorDeliveryOrderDetail="
-                    OutdoorDeliveryCar_Property_OutdoorDeliveryOrderDetail
-                  "
-                  :IndoorDeliveryCar_Property_IndoorDeliveryOrderDetail="
-                    IndoorDeliveryCar_Property_IndoorDeliveryOrderDetail
-                  "
-                  :DeliveryDrone_Property_DroneDeliveryOrderDetail="
-                    DeliveryDrone_Property_DroneDeliveryOrderDetail
-                  "
-                /> -->
-                                <RecycleCabinetOccupancyPie
-                  :Delivery_Locker_Property_InputDelivery="
-                    Delivery_Locker_Property_InputDelivery
-                  "
-                  :Delivery_Locker_Property_OutputDelivery="
-                    Delivery_Locker_Property_OutputDelivery
-                  "
-                  :Delivery_Locker_Property_RecycleDelivery="
-                    Delivery_Locker_Property_RecycleDelivery
-                  "
+                                <RecycleBoxStatusPie
+:Box_owner="Box_owner"
                 />
               </div>
               <div class="right2 card">
                 <MapDisplay_DistributionOfOrder
-                  :OutdoorDeliveryCar_Property_OutdoorCarSpeed="
-                    OutdoorDeliveryCar_Property_OutdoorCarSpeed
+                :DeliveryDrone_Property_DroneDeliveryOrder="
+                    DeliveryDrone_Property_DroneDeliveryOrder
                   "
-                  :IndoorDeliveryCar_Property_IndoorCarSpeed="
-                    IndoorDeliveryCar_Property_IndoorCarSpeed
+                  :IndoorDeliveryCar_Property_IndoorDeliveryOrder="
+                    IndoorDeliveryCar_Property_IndoorDeliveryOrder
                   "
-                  :DeliveryDrone_Property_DroneSpeed="
-                    DeliveryDrone_Property_DroneSpeed
+                  :OutdoorDeliveryCar_Property_OutdoorDeliveryOrder="
+                    OutdoorDeliveryCar_Property_OutdoorDeliveryOrder
                   "
                 />
               </div>
@@ -171,7 +144,7 @@ import ObsDownloader from "./components/ObsDownloader.vue";
 import OccupancyChart from "./components/OccupancyChart.vue";
 import OrderCountChart from "./components/OrderCountChart.vue";
 import RecycleCabinetOccupancyChart from "./components/RecycleCabinetOccupancyChart.vue";
-import RecycleCabinetOccupancyPie from "./components/RecycleCabinetOccupancyPie.vue";
+import RecycleBoxStatusPie from "./components/RecycleBoxStatusPie.vue";
 import MapDisplay_indoorCar from "./components/MapDisplay_indoorCar.vue"; // 地图展示组件
 import MapDisplay_outdoorCar from "./components/MapDisplay_outdoorCar.vue"; // 地图展示组件
 import MapDisplay_drone from "./components/MapDisplay_drone.vue"; // 地图展示组件
@@ -182,7 +155,7 @@ export default {
     OccupancyChart,
     OrderCountChart,
     RecycleCabinetOccupancyChart,
-    RecycleCabinetOccupancyPie,
+    RecycleBoxStatusPie,
     MapDisplay_indoorCar,
     ObsDownloader,
     ElButton,
@@ -249,26 +222,23 @@ export default {
   padding: 10px;
   background-color: white;
   border-radius: 10px;
-  margin: 10px 0px; /* 上下为 10px，左右为 0px */
+  margin: 5px 0px; /* 上下为 10px，左右为 0px */
 }
-.left1 .left2 .left3 {
-  height: 250px;
+.left1, .left2, .left3 {
+  height: 225px;
 }
-.right1,
-.right2,
-.right3 {
+
+.right1, .right2, .right3 {
   height: 225px;
 }
 .middle {
-  height: 755px;
+  height: 745px;
 }
-/* 底部样式 */
-.bottom {
-  padding: 20px;
-  text-align: center;
-}
+
 .common-layout {
   background-color: rgba(211, 211, 211, 0.278);
   border-radius: 30px;
 }
+
+
 </style>

@@ -3,8 +3,8 @@ import ObsClient from 'esdk-obs-browserjs';
 
 // 创建 ObsClient 实例
 const obsClient = new ObsClient({
-  access_key_id: 'RDJXBTAC3YO1E0YVQDAH', // 使用Vue CLI中的环境变量 #####之后要隐藏
-  secret_access_key: 'sotkoZEusQKH1PUVltMEYsRKgop4QIv3EblEQD9z',
+  access_key_id: 'NDUQZS2WFPGUUPEDRH27', // 使用Vue CLI中的环境变量 #####之后要隐藏
+  secret_access_key: 'jhXyRbbqAMcgJtxa7LwcDQSBg8LonJTCaCzx7ORS',
   server: "https://obs.cn-south-1.myhuaweicloud.com", // OBS 服务器地址
 });
 

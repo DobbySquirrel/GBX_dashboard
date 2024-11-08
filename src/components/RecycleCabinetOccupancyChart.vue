@@ -1,7 +1,6 @@
 <template>
   <div>
     <div v-if="chartData.length > 0">
-      <!-- ECharts line chart -->
       <div ref="chart" id="RecycleCabinetOccupancyLine"></div>
     </div>
     <div v-else>
@@ -22,19 +21,47 @@ export default {
   },
   data() {
     return {
-      chartData: [], // Parsed chart data
+      localDelivery_Locker_Property_OutputDelivery: this.Delivery_Locker_Property_OutputDelivery,
+      chartData: [],
     };
   },
   watch: {
-    // Watch the prop for changes and update the chart when the data is received
-    Delivery_Locker_Property_OutputDelivery(newData) {
-      if (newData) {
-        this.parseCsvData(newData);
+    Delivery_Locker_Property_OutputDelivery(newVal) {
+      this.localDelivery_Locker_Property_OutputDelivery = newVal;
+      if (newVal) {
+        this.parseCsvData(newVal);
       }
     },
   },
   methods: {
-    // Method to parse CSV data
+    formatTime(timeString) {
+      try {
+        // 解析时间字符串，例如："20241107T092711Z"
+        const year = timeString.substring(0, 4);
+        const month = timeString.substring(4, 6);
+        const day = timeString.substring(6, 8);
+        const hour = timeString.substring(9, 11);
+        const minute = timeString.substring(11, 13);
+        const second = timeString.substring(13, 15);
+
+        // 创建 UTC 时间
+        const utcDate = new Date(Date.UTC(
+          parseInt(year),
+          parseInt(month) - 1,
+          parseInt(day),
+          parseInt(hour),
+          parseInt(minute),
+          parseInt(second)
+        ));
+
+        // 转换为中国时区时间并格式化
+        return `${utcDate.getFullYear()}/${String(utcDate.getMonth() + 1).padStart(2, '0')}/${String(utcDate.getDate()).padStart(2, '0')} ${String(utcDate.getHours()).padStart(2, '0')}:${String(utcDate.getMinutes()).padStart(2, '0')}`;
+      } catch (error) {
+        console.error('Error formatting time:', error);
+        return timeString;
+      }
+    },
+
     parseCsvData(csvData) {
       const lines = csvData.trim().split('\n');
       const result = [];
@@ -50,12 +77,12 @@ export default {
       lines.slice(1).forEach((line) => {
         const values = line.split(',');
         result.push({
-          event_time: values[eventTimeIndex],
+          event_time: this.formatTime(values[eventTimeIndex]),
           occupyRatio: parseFloat(values[occupyRatioIndex]),
         });
       });
 
-      // Sort the data by event_time (optional)
+      // Sort the data by event_time
       result.sort((a, b) => new Date(a.event_time) - new Date(b.event_time));
 
       // Store parsed data for chart rendering
@@ -65,7 +92,6 @@ export default {
       this.renderChart();
     },
 
-    // Method to render the ECharts line chart
     renderChart() {
       this.$nextTick(() => {
         const chartDom = this.$refs.chart;
@@ -73,57 +99,75 @@ export default {
 
         const chartInstance = echarts.init(chartDom);
 
- const option = {
-  title: {
-    text: 'Recycling Cabinet',
-      left: "center",
-      textStyle: {
-      color: "#44652a",
-    },
-    top: '0%',
-  },
-  legend: {
-    data: ["occupyRatio"],
-    orient: 'vertical',
-    left: 'top',
-    top: '10%',
-  },
-  xAxis: {
-    type: 'category',
-    data: this.chartData.map(item => item.event_time), // Use event_time as x-axis data
-  },
-  yAxis: {
-    type: 'value',
-  },
-      grid: {
-      containLabel: true,
-      left: '0%', // 向左对齐
-      bottom: '0%',
-      top: '18%',
-    },
-  series: [
-    {
-      name: "occupyRatio",
-      data: this.chartData.map(item => item.occupyRatio), // Use OccupyRatio as y-axis data
-      type: 'line',
-      smooth: true,
-      lineStyle: {
-        color: '#91CC75', // Set line color to green
-      },
-      itemStyle: {
-        color: '#91CC75', // Set point (symbol) color to green
-      },
-      label: {
-        show: true, // Enable label display
-        position: 'top', // Show label above the point
-        formatter: '{c}', // Use {c} to show the value of the data point
-        color: "#44652a",
-
-      },
-    },
-  ],
-};
-
+        const option = {
+          title: {
+            text: 'Recycling Cabinet',
+            left: "center",
+            textStyle: {
+              color: "#44652a",
+            },
+            top: '0%',
+          },
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'cross',
+              label: {
+                backgroundColor: '#6a7985',
+              },
+            },
+          },
+          legend: {
+            data: ["occupyRatio"],
+            orient: 'vertical',
+            left: 'top',
+            top: '10%',
+          },
+          grid: {
+            left: '3%',
+            right: '10%',
+            bottom: '5%',
+            top: '18%',
+            containLabel: true,
+          },
+          xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: this.chartData.map(item => item.event_time),
+            axisLabel: {
+              formatter: function(value) {
+                return value.split(' ')[1];
+              },
+              interval: 'auto',
+              rotate: 0,
+              margin: 8,
+              hideOverlap: true
+            }
+          },
+          yAxis: {
+            type: 'value',
+          },
+          series: [
+            {
+              name: "occupyRatio",
+              data: this.chartData.map(item => item.occupyRatio),
+              type: 'line',
+              smooth: true,
+              lineStyle: {
+                color: '#91CC75',
+              },
+              itemStyle: {
+                color: '#91CC75',
+              },
+              label: {
+                show: true,
+                position: 'top',
+                formatter: '{c}',
+                color: "#44652a",
+              },
+            },
+          ],
+        };
 
         chartInstance.setOption(option);
       });
@@ -138,7 +182,6 @@ export default {
 </script>
 
 <style scoped>
-/* Chart container styling */
 #RecycleCabinetOccupancyLine {
   width: 100%;
   height: 225px;

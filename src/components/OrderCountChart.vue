@@ -77,6 +77,34 @@ return{
     }
   },
 parseCsvData(DeliveryDrone_Property_DroneDeliveryOrder, IndoorDeliveryCar_Property_IndoorDeliveryOrder, OutdoorDeliveryCar_Property_OutdoorDeliveryOrder) {
+  const formatTime = (timeString) => {
+    try {
+      // 解析时间字符串，例如："20241107T092711Z"
+      const year = timeString.substring(0, 4);
+      const month = timeString.substring(4, 6);
+      const day = timeString.substring(6, 8);
+      const hour = timeString.substring(9, 11);
+      const minute = timeString.substring(11, 13);
+      const second = timeString.substring(13, 15);
+
+      // 创建 UTC 时间
+      const utcDate = new Date(Date.UTC(
+        parseInt(year),
+        parseInt(month) - 1,
+        parseInt(day),
+        parseInt(hour),
+        parseInt(minute),
+        parseInt(second)
+      ));
+
+      // 转换为中国时区时间并格式化
+      return `${utcDate.getFullYear()}/${String(utcDate.getMonth() + 1).padStart(2, '0')}/${String(utcDate.getDate()).padStart(2, '0')} ${String(utcDate.getHours()).padStart(2, '0')}:${String(utcDate.getMinutes()).padStart(2, '0')}`;
+    } catch (error) {
+      console.error('Error formatting time:', error);
+      return timeString;
+    }
+  };
+
   const countOrderNumbersByTime = (csvData, timeField, orderField) => {
     const lines = csvData.trim().split('\n');
     const headers = lines[0].split(',');
@@ -88,10 +116,10 @@ parseCsvData(DeliveryDrone_Property_DroneDeliveryOrder, IndoorDeliveryCar_Proper
       }, {});
     });
 
-    // Aggregate OrderNumbers by event_time
+    // Aggregate OrderNumbers by formatted event_time
     const orderCountByTime = {};
     data.forEach(row => {
-      const eventTime = row[timeField];
+      const eventTime = formatTime(row[timeField]); // 使用新的时间格式化方法
       if (!orderCountByTime[eventTime]) {
         orderCountByTime[eventTime] = 0;
       }
@@ -147,9 +175,9 @@ updateChart() {
       text: "Package Quantity Trend",
       left: "center",
       textStyle: {
-      color: "#44652a",
-    },
-    top: '0%',
+        color: "#44652a",
+      },
+      top: '0%',
     },
     tooltip: {
       trigger: "axis",
@@ -163,13 +191,12 @@ updateChart() {
     legend: {
       data: ["Drone Orders", "Indoor Delivery Car Orders", "Outdoor Delivery Car Orders"],
       top: '10%',
-      left: 'center',
-      left: '2%',
+      left: '10%',
     },
     grid: {
-      left: '0%', // 向左对齐
-      bottom: '0%',
-      right:'0%',
+      left: '3%',
+      right: '10%',
+      bottom: '5%',
       top: '18%',
       containLabel: true,
     },
@@ -178,6 +205,15 @@ updateChart() {
         type: "category",
         boundaryGap: false,
         data: this.unifiedData.map(item => item.event_time),
+        axisLabel: {
+          formatter: function(value) {
+            return value.split(' ')[1];
+          },
+          interval: 'auto',
+          rotate: 0,
+          margin: 8,
+          hideOverlap: true
+        }
       },
     ],
     yAxis: [
@@ -189,7 +225,6 @@ updateChart() {
       {
         name: "Drone Orders",
         type: "line",
-        stack: "Total",
         areaStyle: {color:"rgba(250, 200, 88, 0.5)"},
         color:"#fac858",
         emphasis: {
@@ -200,9 +235,7 @@ updateChart() {
       {
         name: "Indoor Delivery Car Orders",
         type: "line",
-        stack: "Total",
         areaStyle: {color:"rgba(115, 192, 222, 0.5)"}, 
-        
         color:"#73c0de",
         emphasis: {
           focus: "series",
@@ -212,7 +245,6 @@ updateChart() {
       {
         name: "Outdoor Delivery Car Orders",
         type: "line",
-        stack: "Total",
         color:"#91CC75",
         areaStyle: {color:"rgba(145, 204, 117, 0.5)"},
         emphasis: {
@@ -234,7 +266,7 @@ updateChart() {
 
 <style scoped>
 #OrderCountChart {
-  width: 90%;
+  width: 100%;
   height: 225px; 
 }
 </style>

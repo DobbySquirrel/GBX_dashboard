@@ -1,18 +1,15 @@
 <template>
   <div class="table-display">
-    <!-- 使用表格代替卡片显示 -->
-    
     <el-table
-      :data="cards"
+      :data="sortedCards"
       style="width: 100%; border-radius: 10px"
       max-height="150"
       :row-class-name="tableRowClassName"
     >
-      <el-table-column prop="Time" label="订单时间" />
-      <el-table-column prop="Number" label="编号" />
-      <el-table-column prop="Vehicle" label="载具" />
-      <el-table-column prop="BoxState" label="状态" />
-      <el-table-column prop="Emission" label="碳排放量" />
+      <el-table-column prop="event_time" label="Time" sortable />
+      <el-table-column prop="RFID" label="RFID" />
+      <el-table-column prop="Status" label="Status" />
+      <el-table-column prop="owner" label="Owner" />
     </el-table>
   </div>
 </template>
@@ -21,18 +18,6 @@
 export default {
   name: "OrderCards",
   props: {
-    DeliveryDrone_Property_DroneDeliveryOrder: {
-      type: [String, null],
-      required: true,
-    },
-    IndoorDeliveryCar_Property_IndoorDeliveryOrder: {
-      type: [String, null],
-      required: true,
-    },
-    OutdoorDeliveryCar_Property_OutdoorDeliveryOrder: {
-      type: [String, null],
-      required: true,
-    },
     Box_owner: {
       type: [String, null],
       required: true,
@@ -40,133 +25,124 @@ export default {
   },
   data() {
     return {
-      localDeliveryDrone_Property_DroneDeliveryOrder:
-        this.DeliveryDrone_Property_DroneDeliveryOrder,
-      localIndoorDeliveryCar_Property_IndoorDeliveryOrder:
-        this.IndoorDeliveryCar_Property_IndoorDeliveryOrder,
-      localOutdoorDeliveryCar_Property_OutdoorDeliveryOrder:
-        this.OutdoorDeliveryCar_Property_OutdoorDeliveryOrder,
       cards: [],
+      StatusMap: {
+        'UserInfo': 'Out of Warehouse',
+        'DroneDeliveryOrder': 'Drone Delivery',
+        'InputDelivery': 'Locker Deposit',
+        'OutputDelivery': 'Locker Pickup',
+        'RecycleDelivery': 'Locker Recycling'
+      }
     };
   },
-  watch: {
-    DeliveryDrone_Property_DroneDeliveryOrder(newVal) {
-      this.localDeliveryDrone_Property_DroneDeliveryOrder = newVal;
-      this.onDataUpdate();
+  computed: {
+    sortedCards() {
+      return [...this.cards].sort((a, b) => {
+        const timeA = new Date(a.event_time);
+        const timeB = new Date(b.event_time);
+        return timeB - timeA; // 降序排列，最新的在前
+      });
     },
-    IndoorDeliveryCar_Property_IndoorDeliveryOrder(newVal) {
-      this.localIndoorDeliveryCar_Property_IndoorDeliveryOrder = newVal;
-      this.onDataUpdate();
-    },
-    OutdoorDeliveryCar_Property_OutdoorDeliveryOrder(newVal) {
-      this.localOutdoorDeliveryCar_Property_OutdoorDeliveryOrder = newVal;
-      this.onDataUpdate();
-    },
+    latestBoxStatus() {
+      const latestCard = this.sortedCards[0];
+      return latestCard ? latestCard.Status : 'N/A';
+    }
   },
-  mounted() {
-    if (
-      this.DeliveryDrone_Property_DroneDeliveryOrder &&
-      this.IndoorDeliveryCar_Property_IndoorDeliveryOrder &&
-      this.OutdoorDeliveryCar_Property_OutdoorDeliveryOrder
-    ) {
-      this.cards = this.parseCsvData(
-        this.DeliveryDrone_Property_DroneDeliveryOrder,
-        this.IndoorDeliveryCar_Property_IndoorDeliveryOrder,
-        this.OutdoorDeliveryCar_Property_OutdoorDeliveryOrder
-      );
+  watch: {
+    Box_owner: {
+      handler(newVal) {
+        if (newVal) {
+          this.cards = this.parseCsvData(newVal);
+        }
+      },
+      immediate: true
     }
   },
   methods: {
     tableRowClassName({ row, rowIndex }) {
-      if (row.BoxState === "Arrived") {
-        return "success-row";
-      }
-      return "";
+      return '';
     },
 
-    onDataUpdate() {
-      // Check if all local properties have updated data
-      if (
-        this.localDeliveryDrone_Property_DroneDeliveryOrder &&
-        this.localIndoorDeliveryCar_Property_IndoorDeliveryOrder &&
-        this.localOutdoorDeliveryCar_Property_OutdoorDeliveryOrder
-      ) {
-        // Parse and update cards with the latest data
-        this.cards = this.parseCsvData(
-          this.localDeliveryDrone_Property_DroneDeliveryOrder,
-          this.localIndoorDeliveryCar_Property_IndoorDeliveryOrder,
-          this.localOutdoorDeliveryCar_Property_OutdoorDeliveryOrder
-        );
+    formatTime(timeString) {
+      try {
+        // 解析时间字符串，例如："20241107T092711Z"
+        const year = timeString.substring(0, 4);
+        const month = timeString.substring(4, 6);
+        const day = timeString.substring(6, 8);
+        const hour = timeString.substring(9, 11);
+        const minute = timeString.substring(11, 13);
+        const second = timeString.substring(13, 15);
+
+        // 创建 UTC 时间
+        const utcDate = new Date(Date.UTC(
+          parseInt(year),
+          parseInt(month) - 1, // 月份从0开始
+          parseInt(day),
+          parseInt(hour),
+          parseInt(minute),
+          parseInt(second)
+        ));
+
+        // 转换为中国时区（UTC+8）
+        const chinaTime = new Date(utcDate.getTime());
+
+        // 格式化输出
+        return `${chinaTime.getFullYear()}/${String(chinaTime.getMonth() + 1).padStart(2, '0')}/${String(chinaTime.getDate()).padStart(2, '0')} ${String(chinaTime.getHours()).padStart(2, '0')}:${String(chinaTime.getMinutes()).padStart(2, '0')}`;
+      } catch (error) {
+        console.error('Error formatting time:', error);
+        return timeString;
       }
     },
-    parseCsvData(
-      DeliveryDrone_Property_DroneDeliveryOrder,
-      IndoorDeliveryCar_Property_IndoorDeliveryOrder,
-      OutdoorDeliveryCar_Property_OutdoorDeliveryOrder
-    ) {
-      const getLastRow = (csvData) => {
+
+    parseCsvData(csvData) {
+      if (!csvData) return [];
+      
+      try {
         const lines = csvData.trim().split("\n");
-        const headers = lines[0].split(",");
-        const lastLine = lines[lines.length - 1].split(",");
-
-        return headers.reduce((obj, header, index) => {
-          obj[header.trim()] = lastLine[index].trim();
-          return obj;
-        }, {});
-      };
-
-      // Get the last row for each CSV
-      const latestDroneData = getLastRow(
-        DeliveryDrone_Property_DroneDeliveryOrder
-      );
-      const latestIndoorData = getLastRow(
-        IndoorDeliveryCar_Property_IndoorDeliveryOrder
-      );
-      const latestOutdoorData = getLastRow(
-        OutdoorDeliveryCar_Property_OutdoorDeliveryOrder
-      );
-
-      // Construct card data based on the latest data
-      return [
-        {
-          Number: latestDroneData.OrderNumber || "N/A",
-          Vehicle: "Drone",
-          BoxState: latestDroneData.BoxState || "Arrived",
-          Emission: 10,
-          Time: latestDroneData.event_time,
-        },
-        {
-          Number: latestIndoorData.Number || "N/A",
-          Vehicle: "Indoor",
-          BoxState: latestIndoorData.BoxState || "N/A",
-          Emission: 5,
-          Time: latestDroneData.event_time,
-        },
-        {
-          Number: latestOutdoorData.Number || "N/A",
-          Vehicle: "Outdoor",
-          BoxState: latestOutdoorData.BoxState || "N/A",
-          Emission: 8,
-          Time: latestDroneData.event_time,
-        },
-      ];
-    },
-  },
+        const dataRows = lines.slice(1).reverse(); // 反转数据行
+        const lastRows = dataRows.slice(0, 5); // 取前5行
+        
+        return lastRows.map(line => {
+          const values = line.split(",");
+          const status = values[3]?.trim() || 'N/A';
+          return {
+            event_time: this.formatTime(values[0]?.trim() || 'N/A'),
+            RFID: values[5]?.trim() || 'N/A',
+            owner: values[4]?.trim() || 'N/A',
+            Status: this.StatusMap[status] || status // 使用映射表转换状态
+          };
+        });
+      } catch (error) {
+        console.error('Error parsing CSV data:', error);
+        return [];
+      }
+    }
+  }
 };
 </script>
-
 
 <style>
 .table-display {
   margin: 5px;
 }
 
-.el-table .success-row {
-  --el-table-tr-bg-color: #e0f7e951; /* 设置状态为 Arrived 时的行颜色为浅绿色 */
+.el-table {
+  --el-table-header-bg-color: #f5f7fa;
+  --el-table-row-hover-bg-color: #f5f7fa;
 }
 
-.el-table-column {
-  opacity: 0.8; /* 设置表格及列的透明度 */
+.el-table th {
+  background-color: #f5f7fa;
+  color: #606266;
+  font-weight: bold;
+}
+
+.el-table td {
+  color: #606266;
+}
+
+.el-table--striped .el-table__body tr.el-table__row--striped td {
+  background: #fafafa;
 }
 </style>
 

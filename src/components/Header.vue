@@ -1,7 +1,7 @@
 <template>
   <el-header class="custom-header">
     <div class="header-container">
-      <el-row :gutter="18" class="main-row">
+      <el-row :gutter="3" class="main-row">
         <!-- First Column: Title and Statistic Cards -->
         <el-col :span="18" class="content-container">
           <!-- Title Section -->
@@ -11,16 +11,16 @@
               <span style="color: #44652a">for HKUST(GZ) </span>
               <span style="color: #76c850">2024</span>
             </h2>
-            <hr style="border-top: 2px solid #cbebc4; width: 65%; margin: 10px 0 0 20px" />
+            <hr style="border-top: 2px solid #cbebc4; width: 65%; margin: 5px 0 0 5px" />
           </div>
 
           <!-- Statistic Cards Layout -->
-          <el-row :gutter="15" class="statistic-row">
+          <el-row :gutter="5" class="statistic-row">
             <el-col :span="1" class="statistic-col"> </el-col>
-            <el-col :span="7" class="statistic-col">
+            <el-col :span="6" class="statistic-col">
               <div class="statistic-card">
                 <el-statistic
-                  :value="9502"
+                  :value="energyCost"
                   value-style="font-size: 1.7em; color: #44652a;font-weight: bold;"
                 >
                   <template #title>
@@ -32,7 +32,7 @@
                         color: #44652a;
                       "
                     >
-                      Energy Cost
+                    Carbon Reduction
                     </div>
                   </template>
                   <template #prefix>
@@ -53,10 +53,20 @@
                 </el-statistic>
               </div>
             </el-col>
-            <el-col :span="7" class="statistic-col">
+            
+            <el-col :span="6" class="statistic-col">
+              <div style="font-size: 1em; color: #44652a;">
+                = {{ energyCost / 10 }} boxes * 10g CO2 per box
+              </div>
+              <div style="font-size: 0.8em; color: #44652a; margin-top: 5px;">
+                Notes: <br>1. Assumed 20 cycles for green boxes <br>2. Carbon reduction is compared with corrugated boxes of the same size and transport distance.
+              </div>
+            </el-col>
+
+            <el-col :span="5" class="statistic-col">
               <div class="statistic-card">
                 <el-statistic
-                  :value="15"
+                  :value="mealBoxRecycling"
                   value-style="font-size: 1.7em; color: #44652a;font-weight: bold;"
                 >
                   <template #title>
@@ -68,7 +78,7 @@
                         color: #44652a;
                       "
                     >
-                      Meal Box Recycling
+                      Box Recycling
                     </div>
                   </template>
                   <template #prefix>
@@ -89,41 +99,11 @@
                 </el-statistic>
               </div>
             </el-col>
-            <el-col :span="7" class="statistic-col">
-              <div class="statistic-card">
-                <el-statistic
-                  :value="10"
-                  value-style="font-size: 1.7em; color: #44652a;font-weight: bold;"
-                >
-                  <template #title>
-                    <div
-                      style="
-                        display: inline-flex;
-                        align-items: center;
-                        font-size: 2em;
-                        color: #44652a;
-                      "
-                    >
-                      Number of Orders
-                    </div>
-                  </template>
-                  <template #prefix>
-                    <el-icon
-                      style="vertical-align: -0.35em"
-                      color="#76c850"
-                      size="80"
-                    >
-                      <Van />
-                    </el-icon>
-                    <span style="margin-left: 10px"></span>
-                  </template>
-                  <template #suffix>
-                    <el-text class="mx-1" style="font-size: 1em; color: #86a779"
-                      ><span style="margin-left: 10px"></span>Orders</el-text
-                    >
-                  </template>
-                </el-statistic>
+            <el-col :span="5" class="statistic-col">
+              <div style="font-size: 1em; color: #44652a; ">
+                = Number of Recycling boxes placed in the locker
               </div>
+
             </el-col>
           </el-row>
         </el-col>
@@ -142,38 +122,79 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
+import { defineProps, computed } from 'vue';
 import {
-  ArrowRight,
-  CaretBottom,
   Odometer,
   Van,
   MessageBox,
-  CaretTop,
-  Warning,
 } from "@element-plus/icons-vue";
 
 const props = defineProps({
   DeliveryDrone_Property_DroneDeliveryOrder: {
-    type: String,
-    default: "",
+    type: [String, null],
+    required: true,
   },
   IndoorDeliveryCar_Property_IndoorDeliveryOrder: {
-    type: String,
-    default: "",
+    type: [String, null],
+    required: true,
   },
   OutdoorDeliveryCar_Property_OutdoorDeliveryOrder: {
-    type: String,
-    default: "",
+    type: [String, null],
+    required: true,
   },
   Delivery_Locker_Property_RecycleDelivery: {
-    type: String,
-    default: "",
+    type: [String, null],
+    required: true,
   },
   Box_owner: {
-    type: String,
-    default: "",
+    type: [String, null],
+    required: true,
   },
+});
+
+// 计算 Energy Cost
+const energyCost = computed(() => {
+  if (!props.Box_owner) return 0;
+  
+  try {
+    const lines = props.Box_owner.trim().split("\n");
+    const dataRows = lines.slice(1); // 跳过表头行
+    
+    // 统计 product_id 为 66dd1bb4eff8e33e5f3f233f 的数据行数
+    const count = dataRows.filter(line => {
+      const values = line.split(",");
+      const product_id = values[1]?.trim();
+      return product_id === '66dd1bb4eff8e33e5f3f233f';
+    }).length;
+    
+    // 返回数量 * 10
+    return count * 10;
+  } catch (error) {
+    console.error('Error calculating energy cost:', error);
+    return 0;
+  }
+});
+
+// 计算 Meal Box Recycling
+const mealBoxRecycling = computed(() => {
+  if (!props.Box_owner) return 0;
+
+  try {
+    const lines = props.Box_owner.trim().split("\n");
+    const dataRows = lines.slice(1); // 跳过表头行
+
+    // 统计 Status 为 RecycleDelivery 的数据行数
+    const count = dataRows.filter(line => {
+      const values = line.split(",");
+      const status = values[3]?.trim();
+      return status === 'RecycleDelivery';
+    }).length;
+
+    return count;
+  } catch (error) {
+    console.error('Error calculating meal box recycling:', error);
+    return 0;
+  }
 });
 </script>
 
@@ -184,17 +205,14 @@ const props = defineProps({
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: 20px;
+  padding: 10px;
   border-radius: 30px;
   height: 100%;
 }
 
-.header-container {
-  height: 100%;
-}
 
 .dashboard-title {
-  font-size: 2.5em;
+  font-size: 2em;
   margin: 0;
   line-height: 1.2;
   text-align: left;
@@ -204,30 +222,5 @@ const props = defineProps({
 .title-container {
   margin-bottom: 15px;
   margin-top: 0;
-  padding-left: 20px;
-}
-
-.header-image {
-  width: 75%;
-  max-height: 200px;
-  object-fit: contain;
-  margin-top: 10px;
-}
-
-.svg-container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  height: 100%;
-}
-
-.statistic-row {
-  margin-top: 10px;
-  margin-bottom: 5px;
-}
-
-.statistic-card {
-  padding: 10px;
-  height: auto;
 }
 </style>
