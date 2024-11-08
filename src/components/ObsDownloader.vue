@@ -1,103 +1,70 @@
 <template>
-  <!-- <div>
-    <h1>OBS 数据仪表盘</h1>
-    <div>
-      <h2>高频更新文件</h2>
-      <div v-for="(content, index) in highFrequencyFileContents" :key="index">
-        <h3>文件 {{ highFrequencyFiles[index] }} 内容</h3>
-        <pre>{{ content }}</pre> 
-      </div>
-    </div>
-
-    <div>
-      <h2>低频更新文件</h2>
-      <div v-for="(content, index) in lowFrequencyFileContents" :key="index">
-        <h3>文件 {{ lowFrequencyFiles[index] }} 内容</h3>
-        <pre>{{ content }}</pre> 
-      </div>
-    </div>
-  </div> -->
   <div></div>
 </template>
 
 <script>
 import { ref, onMounted } from 'vue';
 import { getObject } from '@/api/obs_chart.js';
+import { useDataStore } from '../store';
 
 export default {
-  setup(props, { emit }) {
-    const highFrequencyFileContents = ref([]); // 高频更新文件内容
-    const lowFrequencyFileContents = ref([]); // 低频更新文件内容
-    const bucketName = 'gbxbox1'; // OBS 存储桶名称
+  setup() {
+    const store = useDataStore();
+    
+    // 文件列表配置
+    const fileConfig = {
+      highFrequency: [
+        'IndoorDeliveryCar_Property/IndoorDeliveryCar_Property_IndoorCarState.csv',
+        'OutdoorDeliveryCar_Property/OutdoorDeliveryCar_Property_OutdoorCarState.csv',
+        'DeliveryDrone_Property/DeliveryDrone_Property_DroneState.csv',
+        'Box/Box_owner.csv',
+      ],
+      lowFrequency: [
+        'DeliveryDrone_Property/DeliveryDrone_Property_DroneDeliveryOrder.csv',
+        'Delivery_Locker_Property/Delivery_Locker_Property_InputDelivery.csv',
+        'Delivery_Locker_Property/Delivery_Locker_Property_OutputDelivery.csv',
+        'Delivery_Locker_Property/Delivery_Locker_Property_RecycleDelivery.csv',
+        'IndoorDeliveryCar_Property/IndoorDeliveryCar_Property_IndoorDeliveryOrder.csv',
+        'OutdoorDeliveryCar_Property/OutdoorDeliveryCar_Property_OutdoorDeliveryOrder.csv',
+      ]
+    };
 
-    // 高频更新的文件列表
-    const highFrequencyFiles = [
-      'IndoorDeliveryCar_Property/IndoorDeliveryCar_Property_IndoorCarState.csv',
-      'OutdoorDeliveryCar_Property/OutdoorDeliveryCar_Property_OutdoorCarState.csv',
-      'DeliveryDrone_Property/DeliveryDrone_Property_DroneState.csv',
-      'Box/Box_owner.csv',
-    ];
-
-    // 低频更新的文件列表
-    const lowFrequencyFiles = [
-      'DeliveryDrone_Property/DeliveryDrone_Property_DroneDeliveryOrder.csv',
-      'Delivery_Locker_Property/Delivery_Locker_Property_InputDelivery.csv',
-      'Delivery_Locker_Property/Delivery_Locker_Property_OutputDelivery.csv',
-      'Delivery_Locker_Property/Delivery_Locker_Property_RecycleDelivery.csv',
-      'IndoorDeliveryCar_Property/IndoorDeliveryCar_Property_IndoorDeliveryOrder.csv',
-      'OutdoorDeliveryCar_Property/OutdoorDeliveryCar_Property_OutdoorDeliveryOrder.csv',
-    ];
-
-    // 下载高频更新文件的方法
-    const fetchHighFrequencyFiles = async () => {
-      for (const file of highFrequencyFiles) {
-        try {
-          const content = await getObject(bucketName, file);
-          highFrequencyFileContents.value.push(content); // 将每个高频文件的内容存储
-          emit('update-data', { file, content });
-        } catch (error) {
-          console.error('Failed to fetch high frequency file:', file, error);
-        }
+    const fetchFiles = async (files) => {
+      store.setLoading(true);
+      try {
+        const promises = files.map(file => 
+          getObject('gbxbox1', file)
+            .then(content => {
+              if (content) {
+                store.updateData(file, content);
+              }
+            })
+            .catch(error => {
+              console.error('Failed to fetch file:', file, error);
+              store.setError(`Failed to fetch ${file}: ${error.message}`);
+            })
+        );
+        
+        await Promise.all(promises);
+      } catch (error) {
+        console.error('Failed to fetch files:', error);
+        store.setError(`Failed to fetch files: ${error.message}`);
+      } finally {
+        store.setLoading(false);
       }
     };
 
-    // 下载低频更新文件的方法
-    const fetchLowFrequencyFiles = async () => {
-      for (const file of lowFrequencyFiles) {
-        try {
-          const content = await getObject(bucketName, file);
-          lowFrequencyFileContents.value.push(content); // 将每个低频文件的内容存储
-          emit('update-data', { file, content });
-        } catch (error) {
-          console.error('Failed to fetch low frequency file:', file, error);
-        }
-      }
-    };
-
-    // 在组件挂载时分别下载高频和低频文件
     onMounted(() => {
-      fetchHighFrequencyFiles();
-      fetchLowFrequencyFiles();
+      store.initializeData(); // 初始化数据
+      // 初始加载
+      fetchFiles([...fileConfig.highFrequency, ...fileConfig.lowFrequency]);
 
-      // 定期刷新高频更新文件
-      setInterval(() => {
-        highFrequencyFileContents.value = []; // 清空旧的内容
-        fetchHighFrequencyFiles();
-      }, 600000); // 10分钟
-
-      // 定期刷新低频更新文件
-      setInterval(() => {
-        lowFrequencyFileContents.value = []; 
-        fetchLowFrequencyFiles();
-      }, 1800000); // 30分钟
+      // 定时刷新
+      setInterval(() => fetchFiles(fileConfig.highFrequency), 600000); // 10分钟
+      setInterval(() => fetchFiles(fileConfig.lowFrequency), 1800000);  // 30分钟
     });
 
-    return {
-      highFrequencyFileContents,
-      lowFrequencyFileContents,
-      highFrequencyFiles, // 传递文件列表到模板中
-      lowFrequencyFiles,  // 传递文件列表到模板中
-    };
-  },
+    return {};
+  }
 };
 </script>

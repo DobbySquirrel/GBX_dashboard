@@ -1,26 +1,31 @@
 <template>
   <div class="common-layout">
     <el-container>
+      <!-- 加载状态显示 -->
+      <el-loading :fullscreen="true" v-if="loading" />
+      
+      <!-- 错误提示 -->
+      <el-alert
+        v-if="error"
+        :title="error"
+        type="error"
+        show-icon
+        closable
+      />
+
       <!-- 头部 -->
       <el-header height="200px">
         <AppHeader
-          :DeliveryDrone_Property_DroneDeliveryOrder="
-            DeliveryDrone_Property_DroneDeliveryOrder
-          "
-          :IndoorDeliveryCar_Property_IndoorDeliveryOrder="
-            IndoorDeliveryCar_Property_IndoorDeliveryOrder
-          "
-          :OutdoorDeliveryCar_Property_OutdoorDeliveryOrder="
-            OutdoorDeliveryCar_Property_OutdoorDeliveryOrder
-          "
-          :Delivery_Locker_Property_RecycleDelivery="
-            Delivery_Locker_Property_RecycleDelivery
-          "
-          :Box_owner="Box_owner"
+          v-if="data"
+          :DeliveryDrone_Property_DroneDeliveryOrder="data.droneDeliveryOrder"
+          :IndoorDeliveryCar_Property_IndoorDeliveryOrder="data.indoorDeliveryOrder"
+          :OutdoorDeliveryCar_Property_OutdoorDeliveryOrder="data.outdoorDeliveryOrder"
+          :Delivery_Locker_Property_RecycleDelivery="data.recycleDelivery"
+          :Box_owner="data.boxOwner"
         />
       </el-header>
       <!-- 主体内容 -->
-      <el-main>
+      <el-main v-if="data">
         <div>
           <el-row :gutter="10">
             <!-- 左侧部分 -->
@@ -28,48 +33,28 @@
               <!-- 左上一: 占用率 -->
               <div class="left1 card">
                 <OccupancyChart
-                  :OutdoorDeliveryCar_Property_OutdoorCarState="
-                    OutdoorDeliveryCar_Property_OutdoorCarState
-                  "
-                  :IndoorDeliveryCar_Property_IndoorCarState="
-                    IndoorDeliveryCar_Property_IndoorCarState
-                  "
-                  :DeliveryDrone_Property_DroneState="
-                    DeliveryDrone_Property_DroneState
-                  "
-                  :Delivery_Locker_Property_InputDelivery="
-                    Delivery_Locker_Property_InputDelivery
-                  "
+                  :OutdoorDeliveryCar_Property_OutdoorCarState="data.outdoorCarState"
+                  :IndoorDeliveryCar_Property_IndoorCarState="data.indoorCarState"
+                  :DeliveryDrone_Property_DroneState="data.droneState"
+                  :Delivery_Locker_Property_InputDelivery="data.inputDelivery"
                 />
               </div>
 
               <!-- 左上二: 订单数量趋势 -->
               <div class="left2 card">
                 <OrderCountChart
-                  :DeliveryDrone_Property_DroneDeliveryOrder="
-                    DeliveryDrone_Property_DroneDeliveryOrder
-                  "
-                  :IndoorDeliveryCar_Property_IndoorDeliveryOrder="
-                    IndoorDeliveryCar_Property_IndoorDeliveryOrder
-                  "
-                  :OutdoorDeliveryCar_Property_OutdoorDeliveryOrder="
-                    OutdoorDeliveryCar_Property_OutdoorDeliveryOrder
-                  "
+                  :DeliveryDrone_Property_DroneDeliveryOrder="data.droneDeliveryOrder"
+                  :IndoorDeliveryCar_Property_IndoorDeliveryOrder="data.indoorDeliveryOrder"
+                  :OutdoorDeliveryCar_Property_OutdoorDeliveryOrder="data.outdoorDeliveryOrder"
                 />
               </div>
               <!-- 回收柜使用情况和回收柜占用情况饼图 -->
               <div class="left3 card">
 
                                   <RecycleCabinetOccupancyChart
-                    :Delivery_Locker_Property_InputDelivery="
-                      Delivery_Locker_Property_InputDelivery
-                    "
-                    :Delivery_Locker_Property_OutputDelivery="
-                      Delivery_Locker_Property_OutputDelivery
-                    "
-                    :Delivery_Locker_Property_RecycleDelivery="
-                      Delivery_Locker_Property_RecycleDelivery
-                    "
+                    :Delivery_Locker_Property_InputDelivery="data.inputDelivery"
+                    :Delivery_Locker_Property_OutputDelivery="data.outputDelivery"
+                    :Delivery_Locker_Property_RecycleDelivery="data.recycleDelivery"
                   />
               </div>
             </el-col>
@@ -77,20 +62,14 @@
             <!-- 中间地图部分 -->
             <el-col :span="14" class="middle card">
               <MapDisplay_indoorCar
-                :OutdoorDeliveryCar_Property_OutdoorCarState="
-                  OutdoorDeliveryCar_Property_OutdoorCarState
-                "
-                :IndoorDeliveryCar_Property_IndoorCarState="
-                  IndoorDeliveryCar_Property_IndoorCarState
-                "
-                :DeliveryDrone_Property_DroneState="
-                  DeliveryDrone_Property_DroneState
-                "
+                :OutdoorDeliveryCar_Property_OutdoorCarState="data.outdoorCarState"
+                :IndoorDeliveryCar_Property_IndoorCarState="data.indoorCarState"
+                :DeliveryDrone_Property_DroneState="data.droneState"
               />
 
               <CardDisplay
             
-                :Box_owner="Box_owner"
+                :Box_owner="data.boxOwner"
               />
             </el-col>
             <!-- 右侧新增的可视化部分 -->
@@ -98,33 +77,21 @@
               <!-- 右上一: 速度数据图表 -->
               <div class="right1 card">
                                 <RecycleBoxStatusPie
-:Box_owner="Box_owner"
+:Box_owner="data.boxOwner"
                 />
               </div>
               <div class="right2 card">
                 <MapDisplay_DistributionOfOrder
-                :DeliveryDrone_Property_DroneDeliveryOrder="
-                    DeliveryDrone_Property_DroneDeliveryOrder
-                  "
-                  :IndoorDeliveryCar_Property_IndoorDeliveryOrder="
-                    IndoorDeliveryCar_Property_IndoorDeliveryOrder
-                  "
-                  :OutdoorDeliveryCar_Property_OutdoorDeliveryOrder="
-                    OutdoorDeliveryCar_Property_OutdoorDeliveryOrder
-                  "
+                :DeliveryDrone_Property_DroneDeliveryOrder="data.droneDeliveryOrder"
+                  :IndoorDeliveryCar_Property_IndoorDeliveryOrder="data.indoorDeliveryOrder"
+                  :OutdoorDeliveryCar_Property_OutdoorDeliveryOrder="data.outdoorDeliveryOrder"
                 />
               </div>
                             <div class="right3 card">
                 <MapDisplay_outdoorCar
-                  :Delivery_Locker_Property_InputDelivery="
-                    Delivery_Locker_Property_InputDelivery
-                  "
-                  :Delivery_Locker_Property_OutputDelivery="
-                    Delivery_Locker_Property_OutputDelivery
-                  "
-                  :Delivery_Locker_Property_RecycleDelivery="
-                    Delivery_Locker_Property_RecycleDelivery
-                  "
+                  :Delivery_Locker_Property_InputDelivery="data.inputDelivery"
+                  :Delivery_Locker_Property_OutputDelivery="data.outputDelivery"
+                  :Delivery_Locker_Property_RecycleDelivery="data.recycleDelivery"
                 />
 
               </div>
@@ -138,6 +105,7 @@
 </template>
 
 <script>
+import { useDataStore } from './store';
 import AppHeader from "./components/Header.vue";
 import CardDisplay from "./components/CardDisplay.vue";
 import ObsDownloader from "./components/ObsDownloader.vue";
@@ -145,11 +113,13 @@ import OccupancyChart from "./components/OccupancyChart.vue";
 import OrderCountChart from "./components/OrderCountChart.vue";
 import RecycleCabinetOccupancyChart from "./components/RecycleCabinetOccupancyChart.vue";
 import RecycleBoxStatusPie from "./components/RecycleBoxStatusPie.vue";
-import MapDisplay_indoorCar from "./components/MapDisplay_indoorCar.vue"; // 地图展示组件
-import MapDisplay_outdoorCar from "./components/MapDisplay_outdoorCar.vue"; // 地图展示组件
-import MapDisplay_drone from "./components/MapDisplay_drone.vue"; // 地图展示组件
-import MapDisplay_DistributionOfOrder from "./components/MapDisplay_DistributionOfOrder.vue"; // 地图展示组件
+import MapDisplay_indoorCar from "./components/MapDisplay_indoorCar.vue";
+import MapDisplay_outdoorCar from "./components/MapDisplay_outdoorCar.vue";
+import MapDisplay_drone from "./components/MapDisplay_drone.vue";
+import MapDisplay_DistributionOfOrder from "./components/MapDisplay_DistributionOfOrder.vue";
 import { ElButton } from "element-plus";
+import { storeToRefs } from 'pinia';
+
 export default {
   components: {
     OccupancyChart,
@@ -165,54 +135,22 @@ export default {
     CardDisplay,
     MapDisplay_DistributionOfOrder,
   },
-  data() {
-    return {
-      IndoorDeliveryCar_Property_IndoorCarState: "", // 新增室内车数据
-      OutdoorDeliveryCar_Property_OutdoorCarState: "", // 新增室外车数据
-      DeliveryDrone_Property_DroneState: "", // 新增无人机数据
-      DeliveryDrone_Property_DroneDeliveryOrder: "", // 新增无人机交付订单数据
-      Delivery_Locker_Property_InputDelivery: "", // 新增输入交付数据
-      Delivery_Locker_Property_OutputDelivery: "", // 新增输出交付数据
-      Delivery_Locker_Property_RecycleDelivery: "", // 新增回收交付数据
-      IndoorDeliveryCar_Property_IndoorDeliveryOrder: "", // 新增室内车交付订单数据
-      OutdoorDeliveryCar_Property_OutdoorDeliveryOrder: "", // 新增室外车交付订单数据
-      Box_owner: "", // 新增 Box_owner 数据
+  
+  setup() {
+    const store = useDataStore();
+    const { data, loading, error } = storeToRefs(store);
+
+    // 处理数据更新
+    const handleDataUpdate = ({ file, content }) => {
+      store.updateData(file, content);
     };
-  },
-  methods: {
-    handleDataUpdate({ file, content }) {
-      const contentString = content || "";
-      if (file.includes("DroneDeliveryOrder")) {
-        this.DeliveryDrone_Property_DroneDeliveryOrder = contentString;
-      }
-      if (file.includes("InputDelivery")) {
-        this.Delivery_Locker_Property_InputDelivery = contentString;
-      }
-      if (file.includes("OutputDelivery")) {
-        this.Delivery_Locker_Property_OutputDelivery = contentString;
-      }
-      if (file.includes("RecycleDelivery")) {
-        this.Delivery_Locker_Property_RecycleDelivery = contentString;
-      }
-      if (file.includes("IndoorDeliveryOrder")) {
-        this.IndoorDeliveryCar_Property_IndoorDeliveryOrder = contentString;
-      }
-      if (file.includes("OutdoorDeliveryOrder")) {
-        this.OutdoorDeliveryCar_Property_OutdoorDeliveryOrder = contentString;
-      }
-      if (file.includes("DroneState")) {
-        this.DeliveryDrone_Property_DroneState = contentString;
-      }
-      if (file.includes("IndoorCarState")) {
-        this.IndoorDeliveryCar_Property_IndoorCarState = contentString;
-      }
-      if (file.includes("OutdoorCarState")) {
-        this.OutdoorDeliveryCar_Property_OutdoorCarState = contentString;
-      }
-      if (file.includes("Box_owner")) {
-        this.Box_owner = contentString;
-      }
-    },
+
+    return {
+      data,
+      loading,
+      error,
+      handleDataUpdate,
+    };
   },
 };
 </script>
@@ -230,8 +168,9 @@ export default {
 .el-header {
   position: relative;
   flex-shrink: 0;  /* 防止header被压缩 */
-  height: 25vh !important; /* 设置为视窗高度的20% */
+  height: 15vh !important; /* 设置为视窗高度的20% */
   padding: 10px;
+  min-height: 200px;
 
 }
 
@@ -258,7 +197,7 @@ export default {
   min-height: 150px; /* 可以适当调整最小高度 */
 }
 .left2 {
-  height: 28vh; /* 修改为25vh以占据视窗高度的25% */
+  height: 25vh; /* 修改为25vh以占据视窗高度的25% */
   min-height: 150px; /* 可以适当调整最小高度 */
 }
 
@@ -275,8 +214,8 @@ export default {
   min-height: 150px; /* 设置最小高度 */
 }
 .middle {
-  min-height: 745px;
-  height: auto;
+  min-height: 700px;
+  height: 80vh;
 }
 
 .common-layout {

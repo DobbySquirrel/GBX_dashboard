@@ -281,7 +281,7 @@ handleResize() {
 <style scoped>
 .chart-container {
   width: 100%;
-  height: 28vh; /* 修改为25vh以占据视窗高度的25% */
+  height: 25vh; /* 修改为25vh以占据视窗高度的25% */
   display: flex;
   flex-direction: column;
 }

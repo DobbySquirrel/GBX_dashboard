@@ -236,7 +236,7 @@ export default {
 <style scoped>
 #Container_Order_Distribution {
   width: 90%;
-  height: 70%;
+  height: 25vh;
   min-height: 200px;
   padding: 5px;
 }

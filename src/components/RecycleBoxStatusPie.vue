@@ -119,12 +119,24 @@ export default {
         tooltip: {
           trigger: "item",
         },
+        legend: {
+          orient: 'horizontal',    // 水平布局
+          bottom: '5%',          // 靠右放置
+                 // 垂直居中
+          textStyle: {
+            color: '#44652a'    // 与标题颜色保持一致
+          },
+          formatter: name => {
+            const value = data.find(item => item.name === name)?.value || 0;
+            return `${name}: ${value}`;  // 显示名称和数值
+          }
+        },
         series: [
           {
             name: "Package Status",
             type: "pie",
             radius: ["20%", "35%"],
-            center: ["50%", "30%"],
+
             itemStyle: {
               borderRadius: 6,
               borderColor: "#fff",
@@ -137,10 +149,7 @@ export default {
               length2: 2,
             },
             label: {
-              show: true,
-              position: 'top',
-              formatter: '{b}:{c}',
-              color: "#44652a",
+              show: false,  // 关闭饼图上的标签显示，改用图例显示
             },
             emphasis: {
               itemStyle: {
@@ -162,7 +171,7 @@ export default {
 <style scoped>
 .chart-container {
   width: 100%;
-  height: 40vh;
+  height: 15vh;
   display: flex;
   flex-direction: column;
 }
@@ -171,6 +180,6 @@ export default {
   width: 100%;
   height: 100%;
   flex: 1;
-  min-height: 300px;
+  min-height: 140px;
 }
 </style>

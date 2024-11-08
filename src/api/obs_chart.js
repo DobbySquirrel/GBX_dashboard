@@ -3,41 +3,42 @@ import ObsClient from 'esdk-obs-browserjs';
 
 // 创建 ObsClient 实例
 const obsClient = new ObsClient({
-  access_key_id: 'NDUQZS2WFPGUUPEDRH27', // 使用Vue CLI中的环境变量 #####之后要隐藏
-  secret_access_key: 'jhXyRbbqAMcgJtxa7LwcDQSBg8LonJTCaCzx7ORS',
-  server: "https://obs.cn-south-1.myhuaweicloud.com", // OBS 服务器地址
+  access_key_id: import.meta.env.VITE_OBS_ACCESS_KEY_ID,
+  secret_access_key: import.meta.env.VITE_OBS_SECRET_ACCESS_KEY,
+  server: import.meta.env.VITE_OBS_SERVER
 });
 
-// 定义 getObject 方法，用于下载对象
-export async function getObject(bucketName, objectKey) {
-  // console.log('Starting to download object:', objectKey, 'from bucket:', bucketName);
-//   console.log(import.meta.env.VUE_APP_ACCESS_KEY_ID);
-//   console.log(import.meta.env.VUE_APP_SECRET_ACCESS_KEY);
+// 定义 getObject 方法,添加重试机制和错误处理
+export async function getObject(bucketName, objectKey, retries = 3) {
+  let lastError = null;
+  
+  for (let i = 0; i < retries; i++) {
+    try {
+      // 直接使用 ObsClient 的 getObject 方法
+      const result = await obsClient.getObject({
+        Bucket: bucketName,
+        Key: objectKey,
+      });
 
-  try {
-    // 调用OBS SDK中的 createV2SignedUrlSync 方法生成临时签名的URL
-    const res = obsClient.createV2SignedUrlSync({
-      Method: 'GET',
-      Bucket: bucketName,
-      Key: objectKey
-    });
+      if (result.CommonMsg.Status < 300) { // 成功状态码
+        // 将 Buffer 转换为文本
+        const content = result.InterfaceResult.Content.toString();
+        return content;
+      } else {
+        throw new Error(`OBS Error: ${result.CommonMsg.Message}`);
+      }
 
-    const signedUrl = res.SignedUrl;
-    // console.log('Signed URL:', signedUrl);
-
-    // 通过fetch请求下载内容
-    const response = await fetch(signedUrl);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+    } catch (error) {
+      console.error(`Attempt ${i + 1} failed:`, error);
+      lastError = error;
+      
+      if (i === retries - 1) {
+        console.error(`Failed to fetch data from OBS after ${retries} retries:`, error);
+        throw lastError;
+      }
+      
+      // 指数退避策略
+      await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
     }
-    
-    const content = await response.text();
-    // console.log('Object content received:', content);
-
-    return content;
-  } catch (error) {
-    console.error('Failed to fetch data from OBS:', error);
-    throw error;
   }
 }

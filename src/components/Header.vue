@@ -11,7 +11,7 @@
               <span style="color: #44652a">for HKUST(GZ) </span>
               <span style="color: #76c850">2024</span>
             </h2>
-            <hr style="border-top: 2px solid #cbebc4; width: 65%; margin: 5px 0 0 5px" />
+            <hr style="border-top: 2px solid #cbebc4; width: 90%; margin: 5px 0 0 5px" />
           </div>
 
           <!-- Statistic Cards Layout -->
@@ -241,13 +241,18 @@ const mealBoxRecycling = computed(() => {
 .svg-container {
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: auto;
+  justify-content: flex-end;
+  height: 100%;
+  padding-right: 20px;
 }
 
 .header-image {
   max-width: 100%;
-  height: auto;
+  max-height: 200px;
+  width: auto;
+  height: 200px;
+  object-fit: contain;
+  margin-right: 0;
 }
 
 .dashboard-title {
