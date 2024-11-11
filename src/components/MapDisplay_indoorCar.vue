@@ -225,9 +225,10 @@ export default {
             effect: {
               show: true,
               trailLength: 0,
+              roundTrip: true,
               period: 7,
               delay: 14000,
-              loop : false
+              loop : true
             },
             data: [{
               lineStyle: {
@@ -249,6 +250,7 @@ export default {
             coordinateSystem: "geo",
             effect: {
               show: true,
+              roundTrip: true,
               trailLength: 0,
               period: 7,
               delay: 21000,
@@ -262,7 +264,7 @@ export default {
                 symbolSize: [10, 10],
                 symbol: "diamond",
                 color: "#ee6666",
-                loop : false
+                loop : true
               },
               coords: [tableCoords, lockerCoords]
             }]

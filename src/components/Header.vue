@@ -59,7 +59,7 @@
                 = {{ energyCost / 0.5267 }} boxes * 0.5267g per box
               </div>
               <div style="font-size: 0.8em; color: #44652a; margin-top: 5px;">
-                Notes: <br>1. Assumed 20 cycles for green boxes <br>2. Carbon reduction is compared with corrugated boxes of the same size and transport distance.
+                Notes: <br>1. Assumed 20 cycles for green boxes <br>2. Carbon reduction is compared with corrugated boxes of the same size and transport distance
               </div>
             </el-col>
 
