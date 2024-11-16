@@ -84,13 +84,14 @@ export default {
         return [x, y, name];
       });
 
-    // 获取转换后的各个位置坐标
+    // 获取转换后的各位置坐标
     const e3LabCoords = this.convertCoordinates(locations['E3 Lab']);
     const helipadCoords = this.convertCoordinates(locations['Helipad']);
     const lockerCoords = this.convertCoordinates(locations['Locker']);
     const tableCoords = this.convertCoordinates(locations['Table']);
 
-    $.get('src/assets/hkust_map.svg', function (svg) {
+    // 使用根路径访问 public 文件夹中的资源
+    $.get('/hkust_map.svg', function (svg) {
       echarts.registerMap("hkust_map", { svg: svg });
       option = {
         tooltip: {},
