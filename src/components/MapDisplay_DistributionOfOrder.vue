@@ -218,14 +218,6 @@ const initChart = async () => {
       myChart.value.dispose()
     }
     
-    myChart.value = echarts.init(dom, null, {
-      renderer: "canvas",
-      useDirtyRect: false,
-    })
-    
-    // 计算数据
-    calculateAreaCounts()
-    
     // 加载 SVG
     const response = await fetch('/hkust_gz_map.svg')
     if (!response.ok) {
@@ -233,10 +225,32 @@ const initChart = async () => {
     }
     const svg = await response.text()
     
+    // 正确解析和注册地图数据
+    const mapData = {
+      svg: svg,
+      // 添加地图的基本信息
+      regions: [{
+        name: 'hkust_gz_map',
+        svg: svg,
+        left: 0,
+        top: 0,
+        width: 1000,
+        height: 1000
+      }]
+    }
+    
     // 确保地图只注册一次
     if (!echarts.getMap('hkust_gz_map')) {
-      echarts.registerMap("hkust_gz_map", { svg: svg })
+      echarts.registerMap("hkust_gz_map", mapData)
     }
+
+    myChart.value = echarts.init(dom, null, {
+      renderer: "canvas",
+      useDirtyRect: false,
+    })
+    
+    // 计算数据
+    calculateAreaCounts()
     
     const maxValue = Math.max(...unifiedData.value.map(item => item.value || 0))
     
@@ -283,16 +297,19 @@ const initChart = async () => {
         },
         selectedMode: false,
         data: unifiedData.value,
-        // 添加默认样式
         itemStyle: {
           areaColor: '#fff',
           borderColor: '#ccc'
-        }
+        },
+        // 添加布局相关配置
+        layoutCenter: ['50%', '50%'],
+        layoutSize: '100%',
+        aspectScale: 1
       }]
     }
     
     if (myChart.value) {
-      myChart.value.setOption(option, true) // 添加 true 参数以清除之前的配置
+      myChart.value.setOption(option, true)
     }
   } catch (error) {
     console.error("初始化图表失败:", error)
