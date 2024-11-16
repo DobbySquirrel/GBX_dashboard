@@ -26,6 +26,7 @@ export default {
   },
   data() {
     return {
+      myChart: null,
       localDeliveryDrone_Property_DroneDeliveryOrder: this.DeliveryDrone_Property_DroneDeliveryOrder,
       localIndoorDeliveryCar_Property_IndoorDeliveryOrder: this.IndoorDeliveryCar_Property_IndoorDeliveryOrder,
       localOutdoorDeliveryCar_Property_OutdoorDeliveryOrder: this.OutdoorDeliveryCar_Property_OutdoorDeliveryOrder,
@@ -156,30 +157,10 @@ export default {
       ];
     },
 
-    async initChart() {
-      var dom = document.getElementById("Container_Order_Distribution");
-      this.myChart = echarts.init(dom, null, {
-        renderer: "canvas",
-        useDirtyRect: false,
-      });
-      
-      try {
-        const response = await fetch("/hkust_gz_map.svg");
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const svg = await response.text();
-        echarts.registerMap("hkust_gz_map", { svg: svg });
-        this.updateChart();
-      } catch (error) {
-        console.error("加载SVG失败:", error);
-        alert("地图文件加载失败，请确认文件存在");
-      }
-    },
-
     updateChart() {
-      const maxValue = Math.max(...this.unifiedData.map(item => item.value || 0));
+      if (!this.myChart) return;
       
+      const maxValue = Math.max(...this.unifiedData.map(item => item.value || 0));
       const option = {
         title: {
           text: "Order Distribution Map",
@@ -192,7 +173,7 @@ export default {
         tooltip: {},
         visualMap: {
           min: 0,
-          max: maxValue > 0 ? maxValue : 10, // 使用实际数据的最大值
+          max: maxValue > 0 ? maxValue : 10,
           orient: "horizontal",
           text: ["", "Order"],
           realtime: true,
@@ -227,15 +208,29 @@ export default {
         ],
       };
 
-      if (this.myChart) {
-        this.myChart.setOption(option);
-      }
+      this.myChart.setOption(option);
     },
 
     handleResize() {
       if (this.myChart) {
         this.myChart.resize();
       }
+    },
+
+    initChart() {
+      const dom = document.getElementById("Container_Order_Distribution");
+      this.myChart = echarts.init(dom, null, {
+        renderer: "canvas",
+        useDirtyRect: false,
+      });
+      
+      // 只在初始化时加载一次 SVG
+      $.get('/hkust_gz_map.svg', (svg) => {
+        echarts.registerMap("hkust_gz_map", { svg: svg });
+        this.updateChart();  // SVG 加载完成后更新图表
+      }).fail((error) => {
+        console.error("加载地图失败:", error);
+      });
     }
   }
 };
