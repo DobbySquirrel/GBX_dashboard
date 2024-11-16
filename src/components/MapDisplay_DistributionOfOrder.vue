@@ -156,16 +156,25 @@ export default {
       ];
     },
 
-    initChart() {
+    async initChart() {
       var dom = document.getElementById("Container_Order_Distribution");
       this.myChart = echarts.init(dom, null, {
         renderer: "canvas",
         useDirtyRect: false,
       });
-      $.get("/hkust_gz_map.svg", function (svg) {
+      
+      try {
+        const response = await fetch("/hkust_gz_map.svg");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const svg = await response.text();
         echarts.registerMap("hkust_gz_map", { svg: svg });
         this.updateChart();
-      }.bind(this));
+      } catch (error) {
+        console.error("加载SVG失败:", error);
+        alert("地图文件加载失败，请确认文件存在");
+      }
     },
 
     updateChart() {
