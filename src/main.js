@@ -1,30 +1,31 @@
 import { createApp } from 'vue';
-import Echarts from 'vue-echarts';
-import App from './App.vue';
-import './styles/element/index.scss'
-import 'element-plus/dist/index.css';
 import ElementPlus from 'element-plus';
+import 'element-plus/dist/index.css';
+import App from './App.vue';
+import router from './router';
+import { createPinia } from 'pinia';
+import Echarts from 'vue-echarts';
 import BaiduMapGL from 'vue3-baidu-map-gl';
-import { createPinia } from 'pinia'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 
-// 创建应用实例
 const app = createApp(App);
 
-// 注册组件，使用小写 Echarts
+// 注册基础组件
+app.use(ElementPlus);
+app.use(createPinia());
+app.use(router);
 app.component('Echarts', Echarts);
 
-// 使用 Element Plus
-app.use(ElementPlus);
+// 注册图标
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component);
+}
 
-// 使用 Pinia
-app.use(createPinia())
-
-// 等待地图加载完成
+// 等待地图加载完成后注册百度地图
 window.addEventListener('load', () => {
   app.use(BaiduMapGL, {
     ak: import.meta.env.VITE_BAIDU_MAP_AK
   });
   
-  // 挂载到 #app
   app.mount('#app');
 });

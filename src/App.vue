@@ -2,21 +2,9 @@
   <div class="common-layout">
     <el-container>
       <!-- 加载状态显示 -->
-      <el-loading :fullscreen="true" v-if="loading" />
-      
-      <!-- 错误提示 -->
-      <el-alert
-        v-if="error"
-        :title="error"
-        type="error"
-        show-icon
-        closable
-      />
-
       <!-- 头部 -->
       <el-header height="200px">
-        <AppHeader
-          v-if="data"
+        <AppHeader 
           :DeliveryDrone_Property_DroneDeliveryOrder="data.droneDeliveryOrder"
           :IndoorDeliveryCar_Property_IndoorDeliveryOrder="data.indoorDeliveryOrder"
           :OutdoorDeliveryCar_Property_OutdoorDeliveryOrder="data.outdoorDeliveryOrder"
@@ -25,7 +13,7 @@
         />
       </el-header>
       <!-- 主体内容 -->
-      <el-main v-if="data">
+      <el-main >
         <div>
           <el-row :gutter="10">
             <!-- 左侧部分 -->
