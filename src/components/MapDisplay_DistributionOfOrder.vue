@@ -213,7 +213,7 @@ const initChart = async () => {
   }
 
   try {
-    // 确保在创建实例前销毁旧的实例
+    // 确保在创建实例前销��旧的实例
     if (myChart.value) {
       myChart.value.dispose()
     }
@@ -224,6 +224,9 @@ const initChart = async () => {
       throw new Error(`加载SVG失败: ${response.status}`)
     }
     const svg = await response.text()
+    
+    // 添加调试输出
+    console.log('SVG content:', svg)
     
     // 正确解析和注册地图数据
     const mapData = {
