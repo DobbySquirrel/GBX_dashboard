@@ -163,7 +163,7 @@ export default {
         useDirtyRect: false,
       });
       
-      $.get("/src/assets/hkust_gz_map.svg", function (svg) {
+      $.get('/hkust_gz_map.svg', function (svg) {
         echarts.registerMap("hkust_gz_map", { svg: svg });
         this.updateChart();
       }.bind(this));
