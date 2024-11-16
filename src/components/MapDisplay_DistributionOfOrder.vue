@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import * as echarts from "echarts"
 import $ from "jquery"
 
@@ -28,108 +28,175 @@ const props = defineProps({
 // 响应式数据
 const myChart = ref(null)
 const unifiedData = ref([])
-const localDeliveryDrone_Property_DroneDeliveryOrder = ref(props.DeliveryDrone_Property_DroneDeliveryOrder)
-const localIndoorDeliveryCar_Property_IndoorDeliveryOrder = ref(props.IndoorDeliveryCar_Property_IndoorDeliveryOrder)
-const localOutdoorDeliveryCar_Property_OutdoorDeliveryOrder = ref(props.OutdoorDeliveryCar_Property_OutdoorDeliveryOrder)
 
 // 方法定义
 const parseCsvData = (csvString) => {
-  const lines = csvString.trim().split('\n')
-  const headers = lines[0].split(',')
-  return lines.slice(1).map(line => {
-    const values = line.split(',')
-    return headers.reduce((obj, header, index) => {
-      obj[header.trim()] = values[index].trim()
-      return obj
-    }, {})
-  })
+  if (!csvString) return []  // 如果数据为空，返回空数组
+  
+  try {
+    const lines = csvString.trim().split('\n')
+    const headers = lines[0].split(',')
+    return lines.slice(1).map(line => {
+      const values = line.split(',')
+      return headers.reduce((obj, header, index) => {
+        obj[header.trim()] = values[index]?.trim() || ''
+        return obj
+      }, {})
+    })
+  } catch (error) {
+    console.error('解析CSV数据失败:', error)
+    return []
+  }
 }
 
 const calculateAreaCounts = () => {
   const areaCount = {}
   
-  // 处理无人机订单数据
-  const droneData = parseCsvData(localDeliveryDrone_Property_DroneDeliveryOrder.value)
-  droneData.forEach(order => {
-    const area = order.ReceiverAddress
-    areaCount[area] = (areaCount[area] || 0) + 1
-  })
+  try {
+    // 添加调试日志
+    // console.log('Drone Data:', props.DeliveryDrone_Property_DroneDeliveryOrder)
+    // console.log('Indoor Data:', props.IndoorDeliveryCar_Property_IndoorDeliveryOrder)
+    // console.log('Outdoor Data:', props.OutdoorDeliveryCar_Property_OutdoorDeliveryOrder)
 
-  // 处理室内配送车订单数据
-  const indoorData = parseCsvData(localIndoorDeliveryCar_Property_IndoorDeliveryOrder.value)
-  indoorData.forEach(order => {
-    const area = order.Area
-    areaCount[area] = (areaCount[area] || 0) + 1
-  })
+    // 检查数据是否都存在
+    if (props.DeliveryDrone_Property_DroneDeliveryOrder) {
+      const droneData = parseCsvData(props.DeliveryDrone_Property_DroneDeliveryOrder)
+      // console.log('Parsed Drone Data:', droneData)
+      droneData.forEach(order => {
+        const area = order.ReceiverAddress
+        if (area) {
+          areaCount[area] = (areaCount[area] || 0) + 1
+        }
+      })
+    }
 
-  // 处理室外配送车订单数据
-  const outdoorData = parseCsvData(localOutdoorDeliveryCar_Property_OutdoorDeliveryOrder.value)
-  outdoorData.forEach(order => {
-    const area = order.Area
-    areaCount[area] = (areaCount[area] || 0) + 1
-  })
+    if (props.IndoorDeliveryCar_Property_IndoorDeliveryOrder) {
+      const indoorData = parseCsvData(props.IndoorDeliveryCar_Property_IndoorDeliveryOrder)
+      // console.log('Parsed Indoor Data:', indoorData)
+      indoorData.forEach(order => {
+        const area = order.Area
+        if (area) {
+          areaCount[area] = (areaCount[area] || 0) + 1
+        }
+      })
+    }
 
-  // 生成最终数据
-  unifiedData.value = [
-    { name: "W1", value: areaCount["W1"] || 0 },
-    { name: "W2", value: areaCount["W2"] || 0 },
-    // ... 其他区域数据 ...
-    { name: "Fire Control Center", value: areaCount["Fire Control Center"] || 0 }
-  ]
-}
+    if (props.OutdoorDeliveryCar_Property_OutdoorDeliveryOrder) {
+      const outdoorData = parseCsvData(props.OutdoorDeliveryCar_Property_OutdoorDeliveryOrder)
+      // console.log('Parsed Outdoor Data:', outdoorData)
+      outdoorData.forEach(order => {
+        const area = order.Area
+        if (area) {
+          areaCount[area] = (areaCount[area] || 0) + 1
+        }
+      })
+    }
 
-const updateChart = () => {
-  if (!myChart.value) return
-  
-  const maxValue = Math.max(...unifiedData.value.map(item => item.value || 0))
-  const option = {
-    title: {
-      text: "Order Distribution Map",
-      left: "center",
-      textStyle: {
-        color: "#44652a",
-      },
-      top: "0%",
-    },
-    tooltip: {},
-    visualMap: {
-      min: 0,
-      max: maxValue > 0 ? maxValue : 10,
-      orient: "horizontal",
-      text: ["", "Order"],
-      realtime: true,
-      top: "80%",
-      textStyle: { fontSize: 12 },
-      calculable: true,
-      inRange: {
-        color: ["white", "#FFF2CD", "#91CC75", "green"],
-      },
-      label: {
-        show: true,
-        textBorderColor: "white",
-        textBorderWidth: 2,
-      },
-    },
-    grid: {
-      top: "60%",
-    },
-    series: [
-      {
-        name: "Orders",
-        type: "map",
-        map: "hkust_gz_map",
-        emphasis: {
-          label: {
-            show: false,
-          },
-        },
-        selectedMode: false,
-        data: unifiedData.value
-      },
-    ],
+    // console.log('Area Counts:', areaCount)
+
+    // 生成最终数据，包含所有区域
+    unifiedData.value = [
+      { name: "W1", value: areaCount["W1"] || 0 },
+      { name: "W2", value: areaCount["W2"] || 0 },
+      { name: "W3", value: areaCount["W3"] || 0 },
+      { name: "W4", value: areaCount["W4"] || 0 },
+      { name: "E1", value: areaCount["E1"] || 0 },
+      { name: "E2", value: areaCount["E2"] || 0 },
+      { name: "E3", value: areaCount["E3"] || 0 },
+      { name: "E4", value: areaCount["E4"] || 0 },
+      { name: "Library", value: areaCount["Library"] || 0 },
+      { name: "Lecture Halls", value: areaCount["Lecture Halls"] || 0 },
+      { name: "Administration Building", value: areaCount["Administration Building"] || 0 },
+      { name: "Activity Center", value: areaCount["Activity Center"] || 0 },
+      { name: "Block 1A", value: areaCount["Block 1A"] || 0 },
+      { name: "Block 1B", value: areaCount["Block 1B"] || 0 },
+      { name: "Block 3", value: areaCount["Block 3"] || 0 },
+      { name: "Block 5A", value: areaCount["Block 5A"] || 0 },
+      { name: "Block 5B", value: areaCount["Block 5B"] || 0 },
+      { name: "Block 5C", value: areaCount["Block 5C"] || 0 },
+      { name: "Block 2A", value: areaCount["Block 2A"] || 0 },
+      { name: "Block 2B", value: areaCount["Block 2B"] || 0 },
+      { name: "Block 4A", value: areaCount["Block 4A"] || 0 },
+      { name: "Block 4B", value: areaCount["Block 4B"] || 0 },
+      { name: "Block 6A", value: areaCount["Block 6A"] || 0 },
+      { name: "Block 6B", value: areaCount["Block 6B"] || 0 },
+      { name: "Block 6C", value: areaCount["Block 6C"] || 0 },
+      { name: "Bleachers", value: areaCount["Bleachers"] || 0 },
+      { name: "Stadium", value: areaCount["Stadium"] || 0 },
+      { name: "Canteen", value: areaCount["Canteen"] || 0 },
+      { name: "10D", value: areaCount["10D"] || 0 },
+      { name: "10C", value: areaCount["10C"] || 0 },
+      { name: "10B", value: areaCount["10B"] || 0 },
+      { name: "10A", value: areaCount["10A"] || 0 },
+      { name: "9D", value: areaCount["9D"] || 0 },
+      { name: "9C", value: areaCount["9C"] || 0 },
+      { name: "9B", value: areaCount["9B"] || 0 },
+      { name: "9A", value: areaCount["9A"] || 0 },
+      { name: "NN-8", value: areaCount["NN-8"] || 0 },
+      { name: "NN-6", value: areaCount["NN-6"] || 0 },
+      { name: "NN-9", value: areaCount["NN-9"] || 0 },
+      { name: "NN-2", value: areaCount["NN-2"] || 0 },
+      { name: "NN-3", value: areaCount["NN-3"] || 0 },
+      { name: "NN-1", value: areaCount["NN-1"] || 0 },
+      { name: "NN-4-5", value: areaCount["NN-4-5"] || 0 },
+      { name: "Data Center", value: areaCount["Data Center"] || 0 },
+      { name: "Energy Center", value: areaCount["Energy Center"] || 0 },
+      { name: "Fire Control Center", value: areaCount["Fire Control Center"] || 0 }
+    ]
+
+    // console.log('Final Unified Data:', unifiedData.value)
+  } catch (error) {
+    console.error('计算区域数据失败:', error)
+    // 设置默认数据
+    unifiedData.value = [
+      { name: "W1", value: 0 },
+      { name: "W2", value: 0 },
+      { name: "W3", value: 0 },
+      { name: "W4", value: 0 },
+      { name: "E1", value: 0 },
+      { name: "E2", value: 0 },
+      { name: "E3", value: 0 },
+      { name: "E4", value: 0 },
+      { name: "Library", value: 0 },
+      { name: "Lecture Halls", value: 0 },
+      { name: "Administration Building", value: 0 },
+      { name: "Activity Center", value: 0 },
+      { name: "Block 1A", value: 0 },
+      { name: "Block 1B", value: 0 },
+      { name: "Block 3", value: 0 },
+      { name: "Block 5A", value: 0 },
+      { name: "Block 5B", value: 0 },
+      { name: "Block 5C", value: 0 },
+      { name: "Block 2A", value: 0 },
+      { name: "Block 2B", value: 0 },
+      { name: "Block 4A", value: 0 },
+      { name: "Block 4B", value: 0 },
+      { name: "Block 6A", value: 0 },
+      { name: "Block 6B", value: 0 },
+      { name: "Block 6C", value: 0 },
+      { name: "Bleachers", value: 0 },
+      { name: "Stadium", value: 0 },
+      { name: "Canteen", value: 0 },
+      { name: "10D", value: 0 },
+      { name: "10C", value: 0 },
+      { name: "10B", value: 0 },
+      { name: "10A", value: 0 },
+      { name: "9D", value: 0 },
+      { name: "9C", value: 0 },
+      { name: "9B", value: 0 },
+      { name: "9A", value: 0 },
+      { name: "NN-8", value: 0 },
+      { name: "NN-6", value: 0 },
+      { name: "NN-9", value: 0 },
+      { name: "NN-2", value: 0 },
+      { name: "NN-3", value: 0 },
+      { name: "NN-1", value: 0 },
+      { name: "NN-4-5", value: 0 },
+      { name: "Data Center", value: 0 },
+      { name: "Energy Center", value: 0 },
+      { name: "Fire Control Center", value: 0 }
+    ]
   }
-
-  myChart.value.setOption(option)
 }
 
 const handleResize = () => {
@@ -140,116 +207,124 @@ const handleResize = () => {
 
 const initChart = async () => {
   const dom = document.getElementById("Container_Order_Distribution")
-  myChart.value = echarts.init(dom, null, {
-    renderer: "canvas",
-    useDirtyRect: false,
-  })
-  
+  if (!dom) {
+    console.error('找不到容器元素')
+    return
+  }
+
   try {
-    // 尝试从不同位置加载SVG文件
+    // 确保在创建实例前销毁旧的实例
+    if (myChart.value) {
+      myChart.value.dispose()
+    }
+    
+    myChart.value = echarts.init(dom, null, {
+      renderer: "canvas",
+      useDirtyRect: false,
+    })
+    
+    // 计算数据
+    calculateAreaCounts()
+    
+    // 加载 SVG
     const response = await fetch('/hkust_gz_map.svg')
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      throw new Error(`加载SVG失败: ${response.status}`)
     }
     const svg = await response.text()
     
-    // 注册地图时添加必要的地图数据结构
-    echarts.registerMap("hkust_gz_map", {
-      svg: svg,
-      // 添加地图区域数据
-      regions: [
-        { name: "W1", svg: { path: [] } },
-        { name: "W2", svg: { path: [] } },
-        { name: "W3", svg: { path: [] } },
-        { name: "W4", svg: { path: [] } },
-        { name: "E1", svg: { path: [] } },
-        { name: "E2", svg: { path: [] } },
-        { name: "E3", svg: { path: [] } },
-        { name: "E4", svg: { path: [] } },
-        { name: "Library", svg: { path: [] } },
-        { name: "Lecture Halls", svg: { path: [] } },
-        { name: "Administration Building", svg: { path: [] } },
-        { name: "Activity Center", svg: { path: [] } },
-        { name: "Block 1A", svg: { path: [] } },
-        { name: "Block 1B", svg: { path: [] } },
-        { name: "Block 3", svg: { path: [] } },
-        { name: "Block 5A", svg: { path: [] } },
-        { name: "Block 5B", svg: { path: [] } },
-        { name: "Block 5C", svg: { path: [] } },
-        { name: "Block 2A", svg: { path: [] } },
-        { name: "Block 2B", svg: { path: [] } },
-        { name: "Block 4A", svg: { path: [] } },
-        { name: "Block 4B", svg: { path: [] } },
-        { name: "Block 6A", svg: { path: [] } },
-        { name: "Block 6B", svg: { path: [] } },
-        { name: "Block 6C", svg: { path: [] } },
-        { name: "Bleachers", svg: { path: [] } },
-        { name: "Stadium", svg: { path: [] } },
-        { name: "Canteen", svg: { path: [] } },
-        { name: "10D", svg: { path: [] } },
-        { name: "10C", svg: { path: [] } },
-        { name: "10B", svg: { path: [] } },
-        { name: "10A", svg: { path: [] } },
-        { name: "9D", svg: { path: [] } },
-        { name: "9C", svg: { path: [] } },
-        { name: "9B", svg: { path: [] } },
-        { name: "9A", svg: { path: [] } },
-        { name: "NN-8", svg: { path: [] } },
-        { name: "NN-6", svg: { path: [] } },
-        { name: "NN-9", svg: { path: [] } },
-        { name: "NN-2", svg: { path: [] } },
-        { name: "NN-3", svg: { path: [] } },
-        { name: "NN-1", svg: { path: [] } },
-        { name: "NN-4-5", svg: { path: [] } },
-        { name: "Data Center", svg: { path: [] } },
-        { name: "Energy Center", svg: { path: [] } },
-        { name: "Fire Control Center", svg: { path: [] } }
-      ]
-    })
+    // 确保地图只注册一次
+    if (!echarts.getMap('hkust_gz_map')) {
+      echarts.registerMap("hkust_gz_map", { svg: svg })
+    }
     
-    // 确保在地图注册完成后再更新图表
-    await nextTick()
-    updateChart()
+    const maxValue = Math.max(...unifiedData.value.map(item => item.value || 0))
+    
+    const option = {
+      title: {
+        text: "Order Distribution Map",
+        left: "center",
+        textStyle: {
+          color: "#44652a",
+        },
+        top: "0%",
+      },
+      tooltip: {
+        trigger: 'item',
+        formatter: '{b}: {c}'
+      },
+      visualMap: {
+        min: 0,
+        max: maxValue > 0 ? maxValue : 10,
+        orient: "horizontal",
+        text: ["", "Order"],
+        realtime: true,
+        top: "80%",
+        textStyle: { fontSize: 12 },
+        calculable: true,
+        inRange: {
+          color: ["white", "#FFF2CD", "#91CC75", "green"],
+        },
+        label: {
+          show: true,
+          textBorderColor: "white",
+          textBorderWidth: 2,
+        },
+      },
+      series: [{
+        name: "Orders",
+        type: "map",
+        map: "hkust_gz_map",
+        roam: true,
+        emphasis: {
+          label: {
+            show: false,
+          },
+        },
+        selectedMode: false,
+        data: unifiedData.value,
+        // 添加默认样式
+        itemStyle: {
+          areaColor: '#fff',
+          borderColor: '#ccc'
+        }
+      }]
+    }
+    
+    if (myChart.value) {
+      myChart.value.setOption(option, true) // 添加 true 参数以清除之前的配置
+    }
   } catch (error) {
-    console.error("加载地图失败:", error)
+    console.error("初始化图表失败:", error)
   }
 }
 
-const onDataUpdate = () => {
-  if (localDeliveryDrone_Property_DroneDeliveryOrder.value &&
-      localIndoorDeliveryCar_Property_IndoorDeliveryOrder.value &&
-      localOutdoorDeliveryCar_Property_OutdoorDeliveryOrder.value) {
+// 修改 watch 部分
+watch([
+  () => props.DeliveryDrone_Property_DroneDeliveryOrder,
+  () => props.IndoorDeliveryCar_Property_IndoorDeliveryOrder,
+  () => props.OutdoorDeliveryCar_Property_OutdoorDeliveryOrder
+], () => {
+  if (myChart.value) {
     calculateAreaCounts()
-    updateChart()
+    const maxValue = Math.max(...unifiedData.value.map(item => item.value || 0))
+    const option = {
+      visualMap: {
+        max: maxValue > 0 ? maxValue : 10
+      },
+      series: [{
+        type: 'map',
+        data: unifiedData.value
+      }]
+    }
+    myChart.value.setOption(option)
   }
-}
-
-// 监听属性变化
-watch(() => props.DeliveryDrone_Property_DroneDeliveryOrder, (newVal) => {
-  localDeliveryDrone_Property_DroneDeliveryOrder.value = newVal
-  onDataUpdate()
-})
-
-watch(() => props.IndoorDeliveryCar_Property_IndoorDeliveryOrder, (newVal) => {
-  localIndoorDeliveryCar_Property_IndoorDeliveryOrder.value = newVal
-  onDataUpdate()
-})
-
-watch(() => props.OutdoorDeliveryCar_Property_OutdoorDeliveryOrder, (newVal) => {
-  localOutdoorDeliveryCar_Property_OutdoorDeliveryOrder.value = newVal
-  onDataUpdate()
-})
+}, { deep: true })
 
 // 生命周期钩子
 onMounted(() => {
   initChart()
   window.addEventListener('resize', handleResize)
-  if (props.DeliveryDrone_Property_DroneDeliveryOrder && 
-      props.IndoorDeliveryCar_Property_IndoorDeliveryOrder && 
-      props.OutdoorDeliveryCar_Property_OutdoorDeliveryOrder) {
-    calculateAreaCounts()
-    updateChart()
-  }
 })
 
 onUnmounted(() => {
