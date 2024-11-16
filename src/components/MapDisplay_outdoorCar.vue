@@ -26,8 +26,6 @@
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { useTrackAnimation } from 'vue3-baidu-map-gl'
 import { outdoorCarMapStyle } from '../assets/mapStyles/outdoorCarMapStyle'
-import * as echarts from "echarts";
-import $ from "jquery";
 
 const map_outdoor = ref(null)
 const mapHeight = ref(0)
@@ -39,36 +37,10 @@ const calculateMapHeight = () => {
 }
 
 // 添加窗口大小变化监听
-onMounted(async () => {
-  try {
-    // 使用加载器加载地图
-    await window.BMapGLLoader.load();
-    
-    window.addEventListener('resize', handleResize);
-    calculateMapHeight();
-    
-    // 加载地图
-    const dom = document.getElementById("container_outdoorCar");
-    const myChart = echarts.init(dom, null, {
-      renderer: "canvas",
-      useDirtyRect: false,
-    });
-
-    // 使用 import.meta.env.BASE_URL 获取基础路径
-    const svgPath = `${import.meta.env.BASE_URL}hkust_gz_map.svg`;
-    
-    $.get(svgPath, function (svg) {
-      echarts.registerMap("hkust_gz_map", { svg: svg });
-      // 在这里设置你的 echarts option
-      const option = {
-        // 你的 echarts 配置
-      };
-      myChart.setOption(option);
-    });
-  } catch (error) {
-    console.error('Failed to load map:', error);
-  }
-});
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+  calculateMapHeight() // 初始计算
+})
 
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)

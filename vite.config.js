@@ -5,7 +5,7 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/your-repo-name/',
+  base: '/GBX_Box_Web/',
   server: {
     proxy: {
       "/mapv": {
