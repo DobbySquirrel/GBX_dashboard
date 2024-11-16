@@ -225,7 +225,7 @@ export default {
       });
       
       // 只在初始化时加载一次 SVG
-      $.get('/hkust_gz_map.svg', (svg) => {
+      $.get('/hkust_map.svg', (svg) => {
         echarts.registerMap("hkust_gz_map", { svg: svg });
         this.updateChart();  // SVG 加载完成后更新图表
       }).fail((error) => {
