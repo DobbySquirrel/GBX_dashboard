@@ -18,14 +18,6 @@ export default {
   data() {
     return {
       chartData: [], // Parsed chart data
-      StatusMap: {
-        'UserInfo': 'Warehouse',
-        'DroneDeliveryOrder': 'Delivering',
-        'InputDelivery': 'Deposit',
-        'OutputDelivery': 'Pickup',
-        'RecycleInDelivery': 'RecycleIn',
-        'RecycleOutDelivery': 'RecycleOut',
-      }
     };
   },
   watch: {
@@ -75,7 +67,7 @@ export default {
       const latestStatuses = {};
       data.forEach(item => {
         if (!latestStatuses[item.RFID]) {
-          latestStatuses[item.RFID] = this.StatusMap[item.Status] || item.Status;
+          latestStatuses[item.RFID] = item.Status;
         }
       });
       return Object.values(latestStatuses);
@@ -91,17 +83,30 @@ export default {
 
     renderStatusPieChart(statuses) {
       const statusCount = statuses.reduce((acc, status) => {
+        if (status === "UserInfo") status = "InWarehouse";
         acc[status] = (acc[status] || 0) + 1;
         return acc;
       }, {});
 
-      const data = Object.entries(statusCount).map(([name, value]) => ({
-        value,
-        name,
+      // 定义固定的状态顺序
+      const statusOrder = [
+        'InWarehouse',
+        'BoxOut',
+        'DroneDeliveryOrder',
+        'InputDelivery',
+        'OutputDelivery',
+        'RecycleInDelivery',
+        'RecycleOutDelivery'
+      ];
+
+      // 按照预定义顺序重新组织数据
+      const orderedData = statusOrder.map(status => ({
+        value: statusCount[status] || 0,
+        name: status,
         itemStyle: { 
-          color: (name === 'RecycleIn' || name === 'RecycleOut') 
-            ? "rgba(145, 204, 117, 0.5)"  // 绿色 - 回收相关状态
-            : "rgba(250, 200, 88, 0.5)"   // 黄色 - 其他状态
+          color: (status === 'RecycleInDelivery' || status === 'RecycleOutDelivery') 
+            ? "rgba(145, 204, 117, 0.5)"
+            : "rgba(250, 200, 88, 0.5)"
         }
       }));
 
@@ -109,49 +114,59 @@ export default {
       var myChart = echarts.init(chartDom);
       var option = {
         title: {
-          text: "Locker Status",
+          text: "Boxes Status",
           left: "center",
           textStyle: {
             color: "#44652a",
           },
-          top: "0%",
+          top: "-2%",
         },
         tooltip: {
-          trigger: "item",
+          trigger: "axis",
+          axisPointer: {
+            type: "shadow"
+          }
         },
-       
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '0%',
+          top: '15%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          data: statusOrder,  // 使用预定义的顺序
+          axisLabel: {
+            color: "#44652a",
+            interval: 0,
+            rotate: 30,
+            fontSize: 9
+          }
+        },
+        yAxis: {
+          type: 'value',
+          show: false,  // 隐藏Y轴
+          splitLine: {
+            show: false  // 隐藏背景网格线
+          }
+        },
         series: [
           {
             name: "Package Status",
-            type: "pie",
-            radius: ["30%", "50%"],
-            itemStyle: {
-              borderRadius: 6,
-              borderColor: "#fff",
-              borderWidth: 2,
-            },
-            data: data,
-            labelLine: {
-              smooth: 0.2,
-              length: 2,
-              length2: 2,
-            },
+            type: "bar",
+            data: orderedData,  // 使用排序后的数据
             label: {
               show: true,
               position: 'top',
-              formatter: '{b}:{c}',
               color: "#44652a",
+              fontSize: 9
             },
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 200,
-                shadowOffsetX: 0,
-                shadowColor: "rgba(0, 0, 0, 0.5)",
-              },
-            },
-          },
-        ],
+            barWidth: '40%'
+          }
+        ]
       };
+      
       myChart.setOption(option);
       this.myChart = myChart;
     },
@@ -171,6 +186,6 @@ export default {
   width: 100%;
   height: 100%;
   flex: 1;
-  min-height: 140px;
+  min-height: 160px;
 }
 </style>

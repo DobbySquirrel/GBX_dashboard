@@ -56,7 +56,7 @@
             
             <el-col :span="6" class="statistic-col">
               <div style="font-size: 1em; color: #44652a;">
-                = {{ energyCost / 0.5267 }} boxes * 0.5267g per box
+                = {{ Math.round(energyCost / 0.5267) }} boxes * 0.5267g per box
               </div>
               <div style="font-size: 0.8em; color: #44652a; margin-top: 5px;">
                 Notes: <br>1. Assumed 20 cycles for green boxes <br>2. Carbon reduction is compared with corrugated boxes of the same size and transport distance
@@ -183,14 +183,21 @@ const mealBoxRecycling = computed(() => {
     const lines = props.Box_owner.trim().split("\n");
     const dataRows = lines.slice(1); // 跳过表头行
 
-    // 统计 Status 为 RecycleDelivery 的数据行数
-    const count = dataRows.filter(line => {
+    // 使用 Set 来存储唯一的 RFID
+    const uniqueRFIDs = new Set();
+    
+    dataRows.forEach(line => {
       const values = line.split(",");
       const status = values[3]?.trim();
-      return status === 'RecycleInDelivery';
-    }).length;
+      const rfid = values[5]?.trim();
+      
+      if (status === 'RecycleOutDelivery' && rfid) {
+        uniqueRFIDs.add(rfid);
+      }
+    });
 
-    return count;
+    return uniqueRFIDs.size;  // 返回唯一 RFID 的数量
+    
   } catch (error) {
     console.error('Error calculating meal box recycling:', error);
     return 0;

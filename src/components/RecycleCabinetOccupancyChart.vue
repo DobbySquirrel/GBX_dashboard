@@ -60,31 +60,50 @@ export default {
     },
 
     parseCsvData(csvData) {
-      const lines = csvData.trim().split('\n');
-      const result = [];
+      try {
+        const lines = csvData.trim().split('\n');
+        if (lines.length <= 1) {
+          console.error('No data in CSV');
+          return;
+        }
 
-      // Extract headers
-      const headers = lines[0].split(',');
+        const headers = lines[0].split(',').map(h => h.trim());
+        const eventTimeIndex = headers.indexOf('event_time');
+        const occupyRatioIndex = headers.indexOf('OccupyRatio');
 
-      // Find index of event_time and OccupyRatio columns
-      const eventTimeIndex = headers.indexOf('event_time');
-      const occupyRatioIndex = headers.indexOf('OccupyRatio');
+        if (eventTimeIndex === -1 || occupyRatioIndex === -1) {
+          console.error('Required columns not found:', headers);
+          return;
+        }
 
-      // Parse each line of CSV and extract relevant data
-      lines.slice(1).forEach((line) => {
-        const values = line.split(',');
-        result.push({
-          event_time: this.formatTime(values[eventTimeIndex]),
-          occupyRatio: parseFloat(values[occupyRatioIndex]),
-        });
-      });
+        const result = [];
+        
+        // 解析每一行数据
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(',').map(v => v.trim());
+          if (values.length >= Math.max(eventTimeIndex, occupyRatioIndex) + 1) {
+            const timeValue = values[eventTimeIndex];
+            const ratioValue = values[occupyRatioIndex];
+            
+            if (timeValue && !isNaN(parseFloat(ratioValue))) {
+              result.push({
+                event_time: this.formatTime(timeValue),
+                occupyRatio: parseFloat(ratioValue)
+              });
+            }
+          }
+        }
 
-      // Sort the data by event_time
-      result.sort((a, b) => new Date(a.event_time) - new Date(b.event_time));
+        // console.log('Parsed data:', result); // 添加调试日志
 
-      // Store parsed data for chart rendering
-      this.chartData = result;
-      this.updateChart();
+        // 按时间排序
+        result.sort((a, b) => new Date(a.event_time) - new Date(b.event_time));
+        
+        this.chartData = result;
+        this.updateChart();
+      } catch (error) {
+        console.error('Error parsing CSV data:', error);
+      }
     },
 
     initChart() {
@@ -95,7 +114,10 @@ export default {
     },
 
     updateChart() {
-      if (!this.myChart) return;
+      if (!this.myChart || !this.chartData.length) {
+        // console.log('No chart instance or no data'); // 添加调试日志
+        return;
+      }
 
       const option = {
         title: {
@@ -147,7 +169,10 @@ export default {
         series: [
           {
             name: "occupyRatio",
-            data: this.chartData.map(item => item.occupyRatio),
+            data: this.chartData.map(item => ({
+              value: item.occupyRatio,
+              time: item.event_time
+            })),
             type: 'line',
             smooth: true,
             lineStyle: {
@@ -166,6 +191,7 @@ export default {
         ],
       };
 
+      // console.log('Chart option:', option); // 添加调试日志
       this.myChart.setOption(option);
     },
 
@@ -176,11 +202,14 @@ export default {
     },
   },
   mounted() {
-    this.initChart();
-    if (this.Delivery_Locker_Property_OutputDelivery) {
-      this.parseCsvData(this.Delivery_Locker_Property_OutputDelivery);
-    }
-    window.addEventListener('resize', this.handleResize);
+    this.$nextTick(() => {
+      this.initChart();
+      if (this.Delivery_Locker_Property_OutputDelivery) {
+        // console.log('Initial data:', this.Delivery_Locker_Property_OutputDelivery); // 添加调试日志
+        this.parseCsvData(this.Delivery_Locker_Property_OutputDelivery);
+      }
+      window.addEventListener('resize', this.handleResize);
+    });
   },
   unmounted() {
     window.removeEventListener('resize', this.handleResize);

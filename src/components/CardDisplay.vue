@@ -100,8 +100,9 @@ export default {
       
       try {
         const lines = csvData.trim().split("\n");
+        console.log(lines);
         const dataRows = lines.slice(1).reverse(); // 反转数据行
-        const lastRows = dataRows.slice(0, 5); // 取前5行
+        const lastRows = dataRows.slice(0, 6); // 取前5行
         
         return lastRows.map(line => {
           const values = line.split(",");

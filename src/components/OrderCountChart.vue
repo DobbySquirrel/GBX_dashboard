@@ -149,7 +149,7 @@ parseCsvData(DeliveryDrone_Property_DroneDeliveryOrder, IndoorDeliveryCar_Proper
   const droneOrderCounts = countOrderNumbersByTime(DeliveryDrone_Property_DroneDeliveryOrder, 'event_time', 'OrderNumber');
   const indoorOrderCounts = countOrderNumbersByTime(IndoorDeliveryCar_Property_IndoorDeliveryOrder, 'event_time', 'Number');
   const outdoorOrderCounts = countOrderNumbersByTime(OutdoorDeliveryCar_Property_OutdoorDeliveryOrder, 'event_time', 'Number');
-
+  // console.log(droneOrderCounts);
   // Aggregate data into unified timestamps
   const allEventTimes = new Set([...Object.keys(droneOrderCounts), ...Object.keys(indoorOrderCounts), ...Object.keys(outdoorOrderCounts)]);
   const unifiedData = Array.from(allEventTimes).sort().map(time => {
