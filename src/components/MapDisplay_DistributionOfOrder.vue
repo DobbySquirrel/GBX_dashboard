@@ -213,7 +213,7 @@ const initChart = async () => {
   }
 
   try {
-    // 确保在创建实例前销��旧的实例
+    // 确保在创建实例前销旧的实例
     if (myChart.value) {
       myChart.value.dispose()
     }
@@ -319,38 +319,92 @@ const initChart = async () => {
   }
 }
 
-// 修改 watch 部分
+// watch 部分的修改
 watch([
   () => props.DeliveryDrone_Property_DroneDeliveryOrder,
   () => props.IndoorDeliveryCar_Property_IndoorDeliveryOrder,
   () => props.OutdoorDeliveryCar_Property_OutdoorDeliveryOrder
-], () => {
-  if (myChart.value) {
-    calculateAreaCounts()
-    const maxValue = Math.max(...unifiedData.value.map(item => item.value || 0))
-    const option = {
-      visualMap: {
-        max: maxValue > 0 ? maxValue : 10
-      },
-      series: [{
-        type: 'map',
-        data: unifiedData.value
-      }]
+], async () => {
+  try {
+    if (myChart.value) {
+      // 重新计算数据
+      calculateAreaCounts()
+      const maxValue = Math.max(...unifiedData.value.map(item => item.value || 0))
+      
+      // 更新完整的配置
+      const option = {
+        visualMap: {
+          min: 0,
+          max: maxValue > 0 ? maxValue : 10,
+          inRange: {
+            color: ["white", "#FFF2CD", "#91CC75", "green"],
+          }
+        },
+        series: [{
+          name: "Orders",
+          type: "map",
+          map: "hkust_gz_map",
+          roam: true,
+          emphasis: {
+            label: {
+              show: false,
+            },
+          },
+          data: unifiedData.value,
+          itemStyle: {
+            areaColor: '#fff',
+            borderColor: '#ccc'
+          },
+          layoutCenter: ['50%', '50%'],
+          layoutSize: '100%',
+          aspectScale: 1
+        }]
+      }
+      
+      // 使用 setOption 的第二个参数为 true，确保完全刷新
+      myChart.value.setOption(option, true)
     }
-    myChart.value.setOption(option)
+  } catch (error) {
+    console.error('更新图表失败:', error)
   }
-}, { deep: true })
+}, { 
+  deep: true,  // 深度监听
+  immediate: true  // 立即执行一次
+})
 
-// 生命周期钩子
+// 添加自动刷新功能
+const autoRefresh = ref(null)
+
 onMounted(() => {
   initChart()
   window.addEventListener('resize', handleResize)
+  
+  // 设置自动刷新间隔（例如每5秒刷新一次）
+  autoRefresh.value = setInterval(() => {
+    if (myChart.value) {
+      calculateAreaCounts()
+      const maxValue = Math.max(...unifiedData.value.map(item => item.value || 0))
+      myChart.value.setOption({
+        visualMap: {
+          max: maxValue > 0 ? maxValue : 10
+        },
+        series: [{
+          type: 'map',
+          data: unifiedData.value
+        }]
+      })
+    }
+  }, 5000) // 5秒刷新一次
 })
 
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
   if (myChart.value) {
     myChart.value.dispose()
+  }
+  // 清除自动刷新定时器
+  if (autoRefresh.value) {
+    clearInterval(autoRefresh.value)
   }
 })
 </script>
