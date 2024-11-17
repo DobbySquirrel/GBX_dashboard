@@ -52,11 +52,11 @@ export default {
       const offsetX = geoItems.X[0] - geoItems.Longitude[0] * scaleX;
       const offsetY = geoItems.Y[0] - geoItems.Latitude[0] * scaleY;
 
-      // 转换坐标
-      const x = coords[0] * scaleX + offsetX;
-      const y = coords[1] * scaleY + offsetY;
-
-      return [x, y];
+      // 转换坐标，确保返回数组而不是元组
+      return [
+        coords[0] * scaleX + offsetX,
+        coords[1] * scaleY + offsetY
+      ];
     }
   },
   mounted() {
@@ -68,6 +68,9 @@ export default {
     var app = {};
     var option;
 
+    // 保存 this 的引用
+    const that = this;
+
     // 定义位置坐标
     const locations = {
       'Locker': [113.47953830802487, 22.894216859923475],
@@ -76,7 +79,7 @@ export default {
       'Table': [113.47823574698361, 22.894299277972735]
     };
 
-    // 转换所有坐标
+    // 转换所有位置坐标
     const convertedLocations = Object.entries(locations)
       .filter(([name]) => name !== 'Table')
       .map(([name, coords]) => {
@@ -84,8 +87,37 @@ export default {
         return [x, y, name];
       });
 
+    // 室内车辆路径坐标
+    const indoorCarRoute = [
+      [113.4784337329932, 22.891969468587746], [113.47846096680671, 22.89197170827936],
+      [113.47849147616098, 22.89197708710776], [113.47851640533419, 22.891981807019302],
+      [113.47853899458181, 22.89199514808637], [113.47855694680881, 22.892006372384746],
+      [113.47855800314849, 22.892031538163337], [113.47855587160588, 22.89207114396901],
+      [113.47855416836907, 22.892106974635613], [113.47855270924437, 22.892151411402033],
+      [113.47854958682849, 22.892198026441317], [113.478546060518, 22.892249649372623],
+      [113.47854208481928, 22.892300882563934], [113.47853330455028, 22.892369466125714],
+      [113.47852776542443, 22.89242865641966], [113.47851540447452, 22.892492219276047],
+      [113.47849734084365, 22.892566077675056], [113.47847871131648, 22.892621258452042],
+      [113.47845333430848, 22.89268583356464], [113.4784353024122, 22.89273803416537],
+      [113.47841945354395, 22.892767281749688], [113.47838756898408, 22.89277163615985],
+      [113.47834349350944, 22.892760343309945], [113.47829062082222, 22.89275302367246],
+      [113.4782419001492, 22.892749621722775], [113.47820765454803, 22.89275109419252],
+      [113.47819040025978, 22.892770199994658], [113.4781969646565, 22.892802893307664],
+      [113.47822390797661, 22.892795901478888], [113.47823847481237, 22.892772165779135],
+      [113.47825281307043, 22.892764447859403], [113.47828184576834, 22.892764279150033],
+      [113.47828412044943, 22.89276428021781]
+    ];
+
+    // 转换室内车辆路径坐标
+    const convertedIndoorCarRoute = indoorCarRoute.map(coord => {
+      const [x, y] = this.convertCoordinates(coord);
+      return [x, y];  // 确保每个点都是数组格式
+    });
+    console.log(convertedIndoorCarRoute); 
     // 获取转换后的各位置坐标
     const e3LabCoords = this.convertCoordinates(locations['E3 Lab']);
+
+    console.log(e3LabCoords); 
     const helipadCoords = this.convertCoordinates(locations['Helipad']);
     const lockerCoords = this.convertCoordinates(locations['Locker']);
     const tableCoords = this.convertCoordinates(locations['Table']);
@@ -133,6 +165,9 @@ export default {
             {
               name: 'Locker → E3 Lab: RecycleOutDelivery',
     
+            },
+            {
+              name: 'Indoor Car Route',
             }
           ],
           textStyle: {
@@ -293,6 +328,31 @@ export default {
                 color: "#73c0de",
               },
               coords: [lockerCoords, e3LabCoords]
+            }]
+          },
+          // 在 series 数组中添加新的线条配置
+          {
+            name: 'Indoor Car Route',
+            type: "lines",
+            coordinateSystem: "geo",
+            effect: {
+              show: true,
+              trailLength: 0.5,
+              period: 5,
+              delay: 0,
+              symbol: 'circle',
+              symbolSize: 4,
+              loop: true,
+              color: '#73c0de'
+            },
+            lineStyle: {
+              color: '#73c0de',
+              width: 2,
+              opacity: 0.6,
+              curveness: 0
+            },
+            data: [{
+              coords: convertedIndoorCarRoute
             }]
           }
         ],
