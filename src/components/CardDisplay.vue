@@ -127,7 +127,6 @@ export default {
 .table-display {
   margin: 0px;
   height: 30vh;
-  min-height: 300px;
 }
 
 .el-table {

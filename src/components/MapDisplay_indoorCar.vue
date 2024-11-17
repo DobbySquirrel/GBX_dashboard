@@ -103,14 +103,15 @@ export default {
               show: true,
             textBorderColor: "white", // Sets the border color to white
             textBorderWidth: 2, // Sets the border width
+            fontSize: 10,
             },
 
             center: helipadCoords,
         },
         legend: {
           orient: 'vertical',
-          left: 10,
-          top: 10,
+          left: '1%',
+          top: '1%',
 
           data: [
             {
@@ -136,7 +137,7 @@ export default {
           ],
           textStyle: {
             color: '#333',
-            fontSize: 12,
+            fontSize: 10,
           }
         },
         series: [
@@ -308,8 +309,7 @@ export default {
 <style scoped>
 #container_indoorCar {
   width: 100%;
-  height: 55vh;
-  min-height: 400px;
+  height: 60vh;
 }
 .title-container {
   text-align: center;
