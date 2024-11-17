@@ -125,6 +125,7 @@ export default {
           left: "center",
           textStyle: {
             color: "#44652a",
+            fontSize: 12
           },
         },
         tooltip: {
@@ -133,6 +134,7 @@ export default {
             type: 'cross',
             label: {
               backgroundColor: '#6a7985',
+
             },
           },
         },
@@ -141,7 +143,10 @@ export default {
           orient: 'vertical',
           left: 'top',
           top: '10%',
-          left: '10%'
+          left: '10%',
+          textStyle: {
+        fontSize: 10  
+      }
         },
         grid: {
           left: '3%',
@@ -160,11 +165,15 @@ export default {
             interval: 'auto',
             rotate: 0,
             margin: 8,
-            hideOverlap: true
+            hideOverlap: true,
+            fontSize: 10,
           }
         },
         yAxis: {
           type: 'value',
+          axisLabel: {
+            fontSize: 10,
+          },
         },
         series: [
           {
@@ -185,6 +194,7 @@ export default {
               show: true,
               position: 'top',
               formatter: '{c}',
+              fontSize: 10,
               color: "#44652a",
             },
           },
@@ -220,11 +230,10 @@ export default {
   },
 };
 </script>
-
 <style scoped>
 .chart-container {
   width: 100%;
-  height: 25vh;
+  height: 30vh;
   position: relative;
 }
 
@@ -234,3 +243,4 @@ export default {
   min-height: 150px;
 }
 </style>
+

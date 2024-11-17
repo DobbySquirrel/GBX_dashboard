@@ -17,18 +17,18 @@
           <!-- Statistic Cards Layout -->
           <el-row :gutter="5" class="statistic-row">
             <el-col :span="1" class="statistic-col"> </el-col>
-            <el-col :span="6" class="statistic-col">
+            <el-col :span="5" class="statistic-col">
               <div class="statistic-card">
                 <el-statistic
                   :value="energyCost"
-                  value-style="font-size: 1.7em; color: #44652a;font-weight: bold;"
+                  value-style="font-size: 1.2em; color: #44652a;font-weight: bold;"
                 >
                   <template #title>
                     <div
                       style="
                         display: inline-flex;
                         align-items: center;
-                        font-size: 2em;
+                        font-size: 1.2em;
                         color: #44652a;
                       "
                     >
@@ -37,16 +37,15 @@
                   </template>
                   <template #prefix>
                     <el-icon
-                      style="vertical-align: -0.35em"
+                      class="statistic-icon"
                       color="#76c850"
-                      size="80"
                     >
                       <Odometer />
                     </el-icon>
-                    <span style="margin-left: 10px"></span>
+                    <span style="margin-left: 5px"></span>
                   </template>
                   <template #suffix>
-                    <el-text class="mx-1" style="font-size: 1em; color: #86a779"
+                    <el-text class="mx-1" style="font-size: 0.8em; color: #86a779"
                       ><span style="margin-left: 10px"></span>g CO2</el-text
                     >
                   </template>
@@ -54,27 +53,27 @@
               </div>
             </el-col>
             
-            <el-col :span="6" class="statistic-col">
-              <div style="font-size: 1em; color: #44652a;">
+            <el-col :span="8" class="statistic-col">
+              <div style="font-size: 0.5em; color: #44652a;">
                 = {{ Math.round(energyCost / 0.5267) }} boxes * 0.5267g per box
               </div>
-              <div style="font-size: 0.8em; color: #44652a; margin-top: 5px;">
+              <div style="font-size: 10px; color: #44652a; margin-top: 5px;">
                 Notes: <br>1. Assumed 20 cycles for green boxes <br>2. Carbon reduction is compared with corrugated boxes of the same size and transport distance
               </div>
             </el-col>
 
-            <el-col :span="5" class="statistic-col">
+            <el-col :span="4" class="statistic-col">
               <div class="statistic-card">
                 <el-statistic
                   :value="mealBoxRecycling"
-                  value-style="font-size: 1.7em; color: #44652a;font-weight: bold;"
+                  value-style="font-size: 1.2em; color: #44652a;font-weight: bold;"
                 >
                   <template #title>
                     <div
                       style="
                         display: inline-flex;
                         align-items: center;
-                        font-size: 2em;
+                        font-size: 1.2em;
                         color: #44652a;
                       "
                     >
@@ -83,16 +82,15 @@
                   </template>
                   <template #prefix>
                     <el-icon
-                      style="vertical-align: -0.35em"
+                      class="statistic-icon"
                       color="#76c850"
-                      size="80"
                     >
                       <MessageBox />
                     </el-icon>
-                    <span style="margin-left: 10px"></span>
+                    <span style="margin-left: 5px"></span>
                   </template>
                   <template #suffix>
-                    <el-text class="mx-1" style="font-size: 1em; color: #86a779"
+                    <el-text class="mx-1" style="font-size: 0.8em; color: #86a779"
                       ><span style="margin-left: 10px"></span>Boxes</el-text
                     >
                   </template>
@@ -100,7 +98,7 @@
               </div>
             </el-col>
             <el-col :span="5" class="statistic-col">
-              <div style="font-size: 1em; color: #44652a; ">
+              <div style="font-size: 10px; color: #44652a; ">
                 = Number of Recycling boxes placed in the locker
               </div>
 
@@ -212,10 +210,10 @@ const mealBoxRecycling = computed(() => {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: 10px;
+  padding: 8px;
   border-radius: 30px;
   height: auto;
-  min-height: 210px;
+  min-height: 170px;
 }
 
 .header-container {
@@ -237,12 +235,12 @@ const mealBoxRecycling = computed(() => {
 .statistic-row {
   width: 100%;
   height: auto;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 .statistic-card {
   height: auto;
-  padding: 10px;
+  padding: 5px;
 }
 
 .svg-container {
@@ -250,28 +248,75 @@ const mealBoxRecycling = computed(() => {
   align-items: center;
   justify-content: flex-end;
   height: 100%;
-  padding-right: 20px;
+  padding-right: 10px;
 }
 
 .header-image {
-  max-width: 100%;
-  max-height: 200px;
   width: auto;
-  height: 200px;
+  height: calc(100% - 20px);
+  max-height: 130px;
+  min-height: 120px;
   object-fit: contain;
   margin-right: 0;
 }
 
 .dashboard-title {
-  font-size: 2em;
+  font-size: 1.5em;
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.1;
   text-align: left;
   width: 100%;
 }
 
 .title-container {
-  margin-bottom: 15px;
+  margin-bottom: 8px;
   margin-top: 0;
+}
+
+@media screen and (max-width: 1920px) {
+  .header-image {
+    max-height: 130px;
+  }
+}
+
+@media screen and (max-width: 1440px) {
+  .header-image {
+    max-height: 110px;
+  }
+}
+
+@media screen and (max-width: 1280px) {
+  .header-image {
+    max-height: 90px;
+  }
+}
+
+.statistic-icon {
+  font-size: 2.5em;
+  vertical-align: middle;
+}
+
+/* 响应式设计 */
+@media screen and (max-width: 1920px) {
+  .statistic-icon {
+    font-size: 2.2em;
+  }
+}
+
+@media screen and (max-width: 1440px) {
+  .statistic-icon {
+    font-size: 2em;
+  }
+}
+
+@media screen and (max-width: 1280px) {
+  .statistic-icon {
+    font-size: 1.8em;
+  }
+}
+
+/* 添加深度选择器来覆盖 Element Plus 的默认样式 */
+:deep(.el-icon) {
+  vertical-align: middle !important;
 }
 </style>

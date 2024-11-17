@@ -3,7 +3,7 @@
     <el-container>
       <!-- 加载状态显示 -->
       <!-- 头部 -->
-      <el-header height="200px">
+      <el-header>
         <AppHeader 
           :DeliveryDrone_Property_DroneDeliveryOrder="data.droneDeliveryOrder"
           :IndoorDeliveryCar_Property_IndoorDeliveryOrder="data.indoorDeliveryOrder"
@@ -155,61 +155,63 @@ export default {
 /* 确保 header 不会与内容重叠 */
 .el-header {
   position: relative;
-  flex-shrink: 0;  /* 防止header被压缩 */
-  height: 15vh !important; /* 设置为视窗高度的20% */
-  padding: 10px;
-  min-height: 200px;
-
+  flex-shrink: 0;
+  height: 10vh !important;
+  padding: 5px;
+  min-height: 150px;
+  
+  overflow: hidden;
 }
 
 /* 确保主体内容正确显示 */
 .el-main {
   flex: 1;
   height: auto;
-  padding: 10px;
+  padding: 5px;
   overflow: visible;
+  margin-top: 5px;
 }
 
 /* 保持原有样式 */
 .card {
-  padding: 10px;
+  padding: 8px;
   background-color: white;
   border-radius: 10px;
-  margin: 5px 0px;
+  margin: 4px 0px;
   height: auto;
   min-height: 200px;
 }
 
 .left1, .left3 {
-  height: 25vh; /* 修改为25vh以占据视窗高度的25% */
+  height: 30vh; /* 修改为25vh以占据视窗高度的25% */
   min-height: 150px; /* 可以适当调整最小高度 */
 }
 .left2 {
-  height: 25vh; /* 修改为25vh以占据视窗高度的25% */
+  height: 30vh; /* 修改为25vh以占据视窗高度的25% */
   min-height: 150px; /* 可以适当调整最小高度 */
 }
 
 .right1 {
-  height: 15vh; /* 修改为25vh以占据视窗高度的25% */
+  height: 20vh; /* 修改为25vh以占据视窗高度的25% */
   min-height: 150px; /* 设置最小高度 */
 }
  .right2 {
-  height: 25vh; /* 修改为25vh以占据视窗高度的25% */
+  height: 30vh; /* 修改为25vh以占据视窗高度的25% */
   min-height: 150px; /* 设置最小高度 */
 }
 .right3 {
-  height: 35vh; /* 修改为25vh以占据视窗高度的25% */
+  height: 40vh; /* 修改为25vh以占据视窗高度的25% */
   min-height: 150px; /* 设置最小高度 */
 }
 .middle {
-  min-height: 700px;
-  height: 80vh;
+  min-height: 600px;
+  height: calc(90vh + 60px);
 }
 
 .common-layout {
   background-color: rgba(211, 211, 211, 0.278);
   border-radius: 30px;
-  min-height: 100vh;
+  min-height: 90vh;
   height: auto;
   padding: 10px;
   overflow: visible;

@@ -250,14 +250,18 @@ updateChart() {
       text: 'Vehicle Occupancy Rate',
       left: "center",
       textStyle: {
-      color: "#44652a",
-    },
-    top: '0%',
+        color: "#44652a",
+        fontSize: 12
+      },
+      top: '0%',
     },
     legend: {
       data: ['Activated', 'Count'],
       top: '10%',
       left: 'center',
+      textStyle: {
+        fontSize: 10  
+      }
 
     },
     tooltip: {
@@ -280,7 +284,7 @@ updateChart() {
       axisTick: { show: false },
       axisLabel: {
         margin: 30,
-        fontSize: 16,
+        fontSize: 10,
       },
     },
     xAxis: {
@@ -303,7 +307,7 @@ updateChart() {
           show: true,
           position: 'left',
           offset: [0, 0],
-          fontSize: 16,
+          fontSize: 10,
           color: "#67c23a",
         },
         itemStyle: {
@@ -321,7 +325,7 @@ updateChart() {
           show: true,
           position: 'right',
           offset: [10, 0],
-          fontSize: 16,
+          fontSize: 10,
         },
         itemStyle: {
           color: 'rgba(128, 128, 128, 0.8)'
@@ -342,11 +346,10 @@ updateChart() {
   }
 };
 </script>
-
 <style scoped>
 .chart-container {
   width: 100%;
-  height: 25vh; /* 修改为25vh以占据视窗高度的25% */
+  height: 30vh; /* 修改为25vh以占据视窗高度的25% */
   display: flex;
   flex-direction: column;
 }
@@ -358,3 +361,4 @@ updateChart() {
   min-height: 150px; /* 可以适当调整最小高度 */
 }
 </style>
+

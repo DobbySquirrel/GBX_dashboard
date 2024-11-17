@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="title-container">
-      <el-text class="mx-1" style="font-size: 20px; color: #44652a"
+      <el-text class="mx-1" style="font-size: 12px; color: #44652a"
         >Vehicle's Route</el-text
       >
     </div>

@@ -2,7 +2,7 @@
   <div class="table-display">
     <el-table
       :data="sortedCards"
-      style="width: 100%; border-radius: 10px"
+      style="width: 100%; border-radius: 5px"
       :max-height="tableHeight"
       :row-class-name="tableRowClassName"
     >
@@ -33,7 +33,7 @@ export default {
         'OutputDelivery': 'Locker Pickup',
         'RecycleDelivery': 'Locker Recycling'
       },
-      tableHeight: '20vh'
+      tableHeight: '30vh'
     };
   },
   computed: {
@@ -102,7 +102,7 @@ export default {
         const lines = csvData.trim().split("\n");
         // console.log(lines);
         const dataRows = lines.slice(1).reverse(); // 反转数据行
-        const lastRows = dataRows.slice(0, 6); // 取前5行
+        const lastRows = dataRows.slice(0, 7); // 取前5行
         
         return lastRows.map(line => {
           const values = line.split(",");
@@ -125,28 +125,28 @@ export default {
 
 <style>
 .table-display {
-  margin: 5px;
-  height: 20vh;
-  min-height: 200px;
+  margin: 0px;
+  height: 30vh;
+  min-height: 300px;
 }
 
 .el-table {
-  --el-table-header-bg-color: #f5f7fa;
-  --el-table-row-hover-bg-color: #f5f7fa;
+  --el-table-header-bg-color: #fefffe;
+  --el-table-row-hover-bg-color: #f5faf7;
+  font-size: 10px;
 }
 
 .el-table th {
   background-color: #f5f7fa;
   color: #606266;
   font-weight: bold;
+  font-size: 10px;
 }
 
 .el-table td {
-  color: #606266;
+  color: #606661;
+  font-size: 10px;
 }
 
-.el-table--striped .el-table__body tr.el-table__row--striped td {
-  background: #fafafa;
-}
 </style>
 

@@ -118,6 +118,7 @@ export default {
           left: "center",
           textStyle: {
             color: "#44652a",
+            fontSize: 12
           },
           top: "-2%",
         },
@@ -128,7 +129,7 @@ export default {
           }
         },
         grid: {
-          left: '3%',
+          left: '7%',
           right: '4%',
           bottom: '0%',
           top: '15%',

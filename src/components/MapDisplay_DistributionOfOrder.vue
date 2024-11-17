@@ -226,7 +226,7 @@ const initChart = async () => {
     const svg = await response.text()
     
     // 添加调试输出
-    console.log('SVG content:', svg)
+    // console.log('SVG content:', svg)
     
     // 正确解析和注册地图数据
     const mapData = {
@@ -263,6 +263,7 @@ const initChart = async () => {
         left: "center",
         textStyle: {
           color: "#44652a",
+          fontSize: 12
         },
         top: "0%",
       },
@@ -331,45 +332,22 @@ watch([
       calculateAreaCounts()
       const maxValue = Math.max(...unifiedData.value.map(item => item.value || 0))
       
-      // 更新完整的配置
-      const option = {
+      // 更新数据和最大值
+      myChart.value.setOption({
         visualMap: {
-          min: 0,
-          max: maxValue > 0 ? maxValue : 10,
-          inRange: {
-            color: ["white", "#FFF2CD", "#91CC75", "green"],
-          }
+          max: maxValue > 0 ? maxValue : 10
         },
         series: [{
-          name: "Orders",
-          type: "map",
-          map: "hkust_gz_map",
-          roam: true,
-          emphasis: {
-            label: {
-              show: false,
-            },
-          },
-          data: unifiedData.value,
-          itemStyle: {
-            areaColor: '#fff',
-            borderColor: '#ccc'
-          },
-          layoutCenter: ['50%', '50%'],
-          layoutSize: '100%',
-          aspectScale: 1
+          data: unifiedData.value
         }]
-      }
-      
-      // 使用 setOption 的第二个参数为 true，确保完全刷新
-      myChart.value.setOption(option, true)
+      })
     }
   } catch (error) {
     console.error('更新图表失败:', error)
   }
 }, { 
-  deep: true,  // 深度监听
-  immediate: true  // 立即执行一次
+  deep: true,
+  immediate: true
 })
 
 // 添加自动刷新功能
@@ -411,9 +389,7 @@ onUnmounted(() => {
 
 <style scoped>
 #Container_Order_Distribution {
-  width: 90%;
-  height: 25vh;
-  min-height: 200px;
-  padding: 5px;
+  height: 30vh;
+  min-height: 150px;
 }
 </style>

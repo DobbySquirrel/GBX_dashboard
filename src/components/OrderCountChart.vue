@@ -184,6 +184,7 @@ updateChart() {
       left: "center",
       textStyle: {
         color: "#44652a",
+        fontSize: 10
       },
       top: '0%',
     },
@@ -193,6 +194,7 @@ updateChart() {
         type: "cross",
         label: {
           backgroundColor: "#6a7985",
+          fontSize: 10
         },
       },
     },
@@ -200,6 +202,9 @@ updateChart() {
       data: ["Drone Orders", "Indoor Delivery Car Orders", "Outdoor Delivery Car Orders"],
       top: '10%',
       left: '10%',
+      textStyle: {
+        fontSize: 10  
+      }
     },
     grid: {
       left: '3%',
@@ -281,7 +286,7 @@ handleResize() {
 <style scoped>
 .chart-container {
   width: 100%;
-  height: 25vh; /* 修改为25vh以占据视窗高度的25% */
+  height: 30vh; /* 修改为25vh以占据视窗高度的25% */
   display: flex;
   flex-direction: column;
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="chart-container">
     <div class="title-container">
-      <el-text class="mx-1" style="font-size: 18px; color: #44652a">Car's Route Simulation</el-text>
+      <el-text class="mx-1" style="font-size: 12px; color: #44652a">Car's Route Simulation</el-text>
     </div>
     <div ref="map_container" id="outdoor-car-map">
       <BMap
@@ -33,7 +33,7 @@ const mapHeight = ref(0)
 // 计算地图高度
 const calculateMapHeight = () => {
   const windowHeight = window.innerHeight
-  mapHeight.value = Math.floor(windowHeight * 0.30) // 30%的视窗高度
+  mapHeight.value = Math.floor(windowHeight * 0.35) // 30%的视窗高度
 }
 
 // 添加窗口大小变化监听
