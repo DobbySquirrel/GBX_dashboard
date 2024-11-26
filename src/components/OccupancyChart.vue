@@ -113,7 +113,7 @@ watch: {
         // 对 Outdoor/Indoor 根据 device_id 和 Status 进行去重并计数
         const activeDevices = new Set();
         const unactivatedDevices = new Set();
-
+        
         data.forEach(row => {
           if (row.Status === "Active") {
             activeDevices.add(row.Number);
@@ -137,7 +137,7 @@ watch: {
         const unactivatedDevices = new Set();
 
         data.forEach(row => {
-          if (row.State === "In Flight") {
+          if (row.State === "Active") {
             inFlightDevices.add(row.device_id);
           } else if (row.State === "UnActivated") {
             unactivatedDevices.add(row.device_id);
@@ -153,14 +153,14 @@ watch: {
         return difference.size;
 
       } else if (name === "Locker") {
-        // 对 Locker 根据 CellNumber 和 CellStatus 进行去重并计算差集
+        // 对 Locker 根据 CellNumber 进行去重并计算差集
         const lockedCells = new Set();
         const unlockedCells = new Set();
 
         data.forEach(row => {
-          if (row.CellStatus === "Locked") {
+          if (row.Status === "Active") {
             lockedCells.add(row.CellNumer);
-          } else if (row.CellStatus === "Unlocked") {
+          } else if (row.Status === "UnActivated") {
             unlockedCells.add(row.CellNumer);
           }
         });
@@ -183,10 +183,10 @@ watch: {
 
     // Define vehicle inventory for each type
     const Vehicle_inventory = {
-      Locker: 10,
-      Drone: 6,
-      Indoor_Car: 4,
-      Outdoor_Car: 2,
+      Locker: 1,
+      Drone: 1,
+      Indoor_Car: 1,
+      Outdoor_Car: 1,
     };
 
     // Calculate unactivated counts based on inventory
@@ -210,14 +210,14 @@ watch: {
     this.ActivatedValue = [
       { value: validLockerActivated, symbol: this.getSymbolForVehicleType('Locker'),symbolRepeat:'true',symbolSize: ["60%" , "60%" ]},
       { value: validIndoorCarActivated, symbol: this.getSymbolForVehicleType('Indoor_Car'),symbolRepeat:'true',symbolSize: ["70%" , "50%" ] },
-      { value: validOutdoorCarActivated, symbol: this.getSymbolForVehicleType('Outdoor_Car'),symbolRepeat:'true'},
+      { value: validOutdoorCarActivated, symbol: this.getSymbolForVehicleType('Outdoor_Car'),symbolRepeat:'true',symbolSize: ["70%" , "50%" ]},
       { value: validDroneActivated, symbol: this.getSymbolForVehicleType('Drone'),symbolRepeat:'true',symbolSize: ["65%" , "65%" ] },
     ];
 
     this.UnactivatedValue = [
       { value: Vehicle_inventory.Locker, symbol:  this.getSymbolForVehicleType('Locker'),symbolRepeat:'true',animationDuration: 0,symbolSize: ["60%" , "60%" ]},
       { value: Vehicle_inventory.Indoor_Car, symbol: this.getSymbolForVehicleType('Indoor_Car'),symbolRepeat: 'true',animationDuration: 0,symbolSize: ["70%" , "50%" ]},
-      { value: Vehicle_inventory.Outdoor_Car, symbol: this.getSymbolForVehicleType('Outdoor_Car') ,symbolRepeat:  'true',animationDuration: 0},
+      { value: Vehicle_inventory.Outdoor_Car, symbol: this.getSymbolForVehicleType('Outdoor_Car') ,symbolRepeat:  'true',animationDuration: 0,symbolSize: ["70%" , "50%" ]},
       { value: Vehicle_inventory.Drone, symbol: this.getSymbolForVehicleType('Drone'),symbolRepeat:  'true',animationDuration: 0,symbolSize: ["65%" , "65%" ]},
     ];
 

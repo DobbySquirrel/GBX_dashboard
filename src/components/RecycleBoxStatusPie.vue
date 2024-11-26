@@ -92,7 +92,9 @@ export default {
       const statusOrder = [
         'InWarehouse',
         'BoxOut',
+        'OutdoorDeliveryOrder',
         'DroneDeliveryOrder',
+        'IndoorDeliveryOrder',
         'InputDelivery',
         'OutputDelivery',
         'RecycleInDelivery',

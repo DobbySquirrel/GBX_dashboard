@@ -14,31 +14,35 @@ export async function getObject(bucketName, objectKey, retries = 3) {
   
   for (let i = 0; i < retries; i++) {
     try {
-      // 直接使用 ObsClient 的 getObject 方法
       const result = await obsClient.getObject({
         Bucket: bucketName,
         Key: objectKey,
       });
 
-      if (result.CommonMsg.Status < 300) { // 成功状态码
-        // 将 Buffer 转换为文本
+      if (result.CommonMsg.Status < 300) {
         const content = result.InterfaceResult.Content.toString();
         return content;
       } else {
+        if (result.CommonMsg.Status === 404) {
+          return '';
+        }
         throw new Error(`OBS Error: ${result.CommonMsg.Message}`);
       }
 
     } catch (error) {
-      console.error(`Attempt ${i + 1} failed:`, error);
+      if (error.message.includes('does not exist')) {
+        return '';
+      }
+      
       lastError = error;
       
       if (i === retries - 1) {
-        console.error(`Failed to fetch data from OBS after ${retries} retries:`, error);
-        throw lastError;
+        return '';
       }
       
-      // 指数退避策略
       await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
     }
   }
+  
+  return '';
 }

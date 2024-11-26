@@ -49,14 +49,14 @@
 
             <!-- 中间地图部分 -->
             <el-col :span="14" class="middle card">
-              <MapDisplay_indoorCar
+              <!-- 暂时注释掉 MapDisplay_indoorCar 组件 -->
+              <!-- <MapDisplay_indoorCar
                 :OutdoorDeliveryCar_Property_OutdoorCarState="data.outdoorCarState"
                 :IndoorDeliveryCar_Property_IndoorCarState="data.indoorCarState"
                 :DeliveryDrone_Property_DroneState="data.droneState"
-              />
+              /> -->
 
               <CardDisplay
-            
                 :Box_owner="data.boxOwner"
               />
             </el-col>
@@ -76,10 +76,13 @@
                 />
               </div>
                             <div class="right3 card">
-                <MapDisplay_outdoorCar
+                <!-- <MapDisplay_outdoorCar
                   :Delivery_Locker_Property_InputDelivery="data.inputDelivery"
                   :Delivery_Locker_Property_OutputDelivery="data.outputDelivery"
                   :Delivery_Locker_Property_RecycleDelivery="data.recycleDelivery"
+                /> -->
+                <Bar_user_score
+:Box_owner="data.boxOwner"
                 />
 
               </div>
@@ -107,6 +110,7 @@ import MapDisplay_drone from "./components/MapDisplay_drone.vue";
 import MapDisplay_DistributionOfOrder from "./components/MapDisplay_DistributionOfOrder.vue";
 import { ElButton } from "element-plus";
 import { storeToRefs } from 'pinia';
+import Bar_user_score from "./components/Bar_user_score.vue";
 
 export default {
   components: {
@@ -122,6 +126,7 @@ export default {
     MapDisplay_drone,
     CardDisplay,
     MapDisplay_DistributionOfOrder,
+    Bar_user_score,
   },
   
   setup() {

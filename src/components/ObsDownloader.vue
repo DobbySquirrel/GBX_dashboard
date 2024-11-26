@@ -23,7 +23,8 @@ export default {
         'DeliveryDrone_Property/DeliveryDrone_Property_DroneDeliveryOrder.csv',
         'Delivery_Locker_Property/Delivery_Locker_Property_InputDelivery.csv',
         'Delivery_Locker_Property/Delivery_Locker_Property_OutputDelivery.csv',
-        'Delivery_Locker_Property/Delivery_Locker_Property_RecycleDelivery.csv',
+        'Delivery_Locker_Property/Delivery_Locker_Property_RecycleInDelivery.csv',
+        'Delivery_Locker_Property/Delivery_Locker_Property_OutputDelivery.csv',
         'IndoorDeliveryCar_Property/IndoorDeliveryCar_Property_IndoorDeliveryOrder.csv',
         'OutdoorDeliveryCar_Property/OutdoorDeliveryCar_Property_OutdoorDeliveryOrder.csv',
       ]
@@ -39,16 +40,9 @@ export default {
                 store.updateData(file, content);
               }
             })
-            .catch(error => {
-              console.error('Failed to fetch file:', file, error);
-              store.setError(`Failed to fetch ${file}: ${error.message}`);
-            })
         );
         
         await Promise.all(promises);
-      } catch (error) {
-        console.error('Failed to fetch files:', error);
-        store.setError(`Failed to fetch files: ${error.message}`);
       } finally {
         store.setLoading(false);
       }
