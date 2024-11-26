@@ -50,15 +50,42 @@ export default {
 
     parseCsvData(csvData) {
       if (!csvData) return [];
+      
+      // 添加时间格式化函数
+      const formatTime = (timeString) => {
+        try {
+          // 解析时间字符串，例如："20241107T092711Z"
+          const year = timeString.substring(0, 4);
+          const month = timeString.substring(4, 6);
+          const day = timeString.substring(6, 8);
+          const hour = timeString.substring(9, 11);
+          const minute = timeString.substring(11, 13);
+          const second = timeString.substring(13, 15);
+
+          // 创建 UTC 时间
+          return new Date(Date.UTC(
+            parseInt(year),
+            parseInt(month) - 1,
+            parseInt(day),
+            parseInt(hour),
+            parseInt(minute),
+            parseInt(second)
+          ));
+        } catch (error) {
+          console.error('Error formatting time:', error);
+          return new Date(timeString);
+        }
+      };
+
       const lines = csvData.trim().split("\n");
       const data = lines.slice(1).map(line => {
         const values = line.split(",");
         return {
-        eventTime: new Date(values[0]?.trim()),    // 事件时间
-        Owner: values[4]?.trim() || 'N/A',         // 用户ID
-        status: values[3]?.trim() || 'N/A',        // 操作状态
-        RFID: values[5]?.trim() || 'N/A'          // 箱子ID
-    };
+          eventTime: formatTime(values[0]?.trim()),    // 使用新的时间格式化方法
+          Owner: values[4]?.trim() || 'N/A',
+          status: values[3]?.trim() || 'N/A',
+          RFID: values[5]?.trim() || 'N/A'
+        };
       });
 // 按时间顺序对所有记录进行排序
 data.sort((a, b) => a.eventTime - b.eventTime);
@@ -99,14 +126,23 @@ Object.values(boxCycles).forEach(boxRecords => {
             const recycleRecord = currentCycle.find(r => r.status === 'RecycleInDelivery');
 
             if (outputRecord && recycleRecord) {
-                // 判断取箱和还箱是否为同一用户
-                if (outputRecord.Owner === recycleRecord.Owner) {
-                    // 同一用户取还箱，奖励10分
-                    scores[recycleRecord.Owner] += 10;
+                // 确保还箱时间晚于取箱时间
+                if (recycleRecord.eventTime >= outputRecord.eventTime) {
+                    // 判断取箱和还箱是否为同一用户
+                    if (outputRecord.Owner === recycleRecord.Owner) {
+                        // 同一用户取还箱，奖励10分
+                        scores[recycleRecord.Owner] += 10;
+                    } else {
+                        // 不同用户：
+                        scores[outputRecord.Owner] += 10;    // 取箱者奖励10分
+                        scores[recycleRecord.Owner] -= 50;   // 还箱者（使用他人箱子）扣50分
+                    }
                 } else {
-                    // 不同用户：
-                    scores[outputRecord.Owner] += 10;    // 取箱者奖励10分
-                    scores[recycleRecord.Owner] -= 50;   // 还箱者（使用他人箱子）扣50分
+                    console.warn('检测到异常：还箱时间早于取箱时间', {
+                        boxId: recycleRecord.RFID,
+                        outputTime: outputRecord.eventTime,
+                        recycleTime: recycleRecord.eventTime
+                    });
                 }
             }
             
