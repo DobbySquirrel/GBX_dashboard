@@ -134,8 +134,8 @@ Object.values(boxCycles).forEach(boxRecords => {
                         scores[recycleRecord.Owner] += 10;
                     } else {
                         // 不同用户：
-                        scores[outputRecord.Owner] += 10;    // 取箱者奖励10分
-                        scores[recycleRecord.Owner] -= 50;   // 还箱者（使用他人箱子）扣50分
+                        scores[recycleRecord.Owner] += 10;    // 还箱者奖励10分
+                        scores[outputRecord.Owner] -= 50;     // 取箱者扣50分
                     }
                 } else {
                     console.warn('检测到异常：还箱时间早于取箱时间', {
