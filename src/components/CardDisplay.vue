@@ -26,13 +26,6 @@ export default {
   data() {
     return {
       cards: [],
-      StatusMap: {
-        'UserInfo': 'Out of Warehouse',
-        'DroneDeliveryOrder': 'Drone Delivery',
-        'InputDelivery': 'Locker Deposit',
-        'OutputDelivery': 'Locker Pickup',
-        'RecycleDelivery': 'Locker Recycling'
-      },
       tableHeight: '90vh'
     };
   },
@@ -104,12 +97,11 @@ export default {
         // 不再限制行数，返回所有数据
         return dataRows.map(line => {
           const values = line.split(",");
-          const status = values[3]?.trim() || 'N/A';
           return {
             event_time: this.formatTime(values[0]?.trim() || 'N/A'),
             RFID: values[5]?.trim() || 'N/A',
             owner: values[4]?.trim() || 'N/A',
-            Status: this.StatusMap[status] || status // 使用映射表转换状态
+            Status: values[3]?.trim() || 'N/A' // 直接使用原始状态
           };
         });
       } catch (error) {
@@ -144,6 +136,5 @@ export default {
   color: #606661;
   font-size: 10px;
 }
-
 </style>
 
