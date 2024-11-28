@@ -39,11 +39,11 @@
               <!-- 回收柜使用情况和回收柜占用情况饼图 -->
               <div class="left3 card">
 
-                                  <RecycleCabinetOccupancyChart
-                    :Delivery_Locker_Property_InputDelivery="data.inputDelivery"
-                    :Delivery_Locker_Property_OutputDelivery="data.outputDelivery"
-                    :Delivery_Locker_Property_RecycleDelivery="data.recycleDelivery"
-                  />
+                <RecycleCabinetOccupancyChart
+                  :Delivery_Locker_Property_InputDelivery="data.inputDelivery"
+                  :Delivery_Locker_Property_OutputDelivery="data.outputDelivery"
+                  :Delivery_Locker_Property_RecycleDelivery="data.recycleDelivery"
+                />
               </div>
             </el-col>
 
@@ -64,27 +64,26 @@
             <el-col :span="5" class="right">
               <!-- 右上一: 速度数据图表 -->
               <div class="right1 card">
-                                <RecycleBoxStatusPie
-:Box_owner="data.boxOwner"
+                <RecycleBoxStatusPie
+                  :Box_owner="data.boxOwner"
                 />
               </div>
               <div class="right2 card">
                 <MapDisplay_DistributionOfOrder
-                :DeliveryDrone_Property_DroneDeliveryOrder="data.droneDeliveryOrder"
+                  :DeliveryDrone_Property_DroneDeliveryOrder="data.droneDeliveryOrder"
                   :IndoorDeliveryCar_Property_IndoorDeliveryOrder="data.indoorDeliveryOrder"
                   :OutdoorDeliveryCar_Property_OutdoorDeliveryOrder="data.outdoorDeliveryOrder"
                 />
               </div>
-                            <div class="right3 card">
+              <div class="right3 card">
                 <!-- <MapDisplay_outdoorCar
                   :Delivery_Locker_Property_InputDelivery="data.inputDelivery"
                   :Delivery_Locker_Property_OutputDelivery="data.outputDelivery"
                   :Delivery_Locker_Property_RecycleDelivery="data.recycleDelivery"
                 /> -->
                 <Bar_user_score
-:Box_owner="data.boxOwner"
+                  :userScoreRecord="data.userScoreRecord"
                 />
-
               </div>
             </el-col>
           </el-row>

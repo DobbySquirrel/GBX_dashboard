@@ -145,8 +145,26 @@ parseCsvData(DeliveryDrone_Property_DroneDeliveryOrder, IndoorDeliveryCar_Proper
     return result;
   };
 
-  // Calculate counts for each CSV
-  const droneOrderCounts = countOrderNumbersByTime(DeliveryDrone_Property_DroneDeliveryOrder, 'event_time', 'OrderNumber');
+  // 先过滤 DroneDeliveryOrder 数据
+  const filterDroneData = (csvData) => {
+    const lines = csvData.trim().split('\n');
+    const headers = lines[0];
+    const filteredLines = lines.filter((line, index) => {
+      if (index === 0) return true; // 保留表头
+      const values = line.split(',');
+      const rowData = headers.split(',').reduce((obj, header, i) => {
+        obj[header.trim()] = values[i].trim();
+        return obj;
+      }, {});
+      return rowData['owner'] === 'Station_1';
+    });
+    return filteredLines.join('\n');
+  };
+
+  const filteredDroneData = filterDroneData(DeliveryDrone_Property_DroneDeliveryOrder);
+
+  // 使用过滤后的数据进行计算
+  const droneOrderCounts = countOrderNumbersByTime(filteredDroneData, 'event_time', 'OrderNumber');
   const indoorOrderCounts = countOrderNumbersByTime(IndoorDeliveryCar_Property_IndoorDeliveryOrder, 'event_time', 'Number');
   const outdoorOrderCounts = countOrderNumbersByTime(OutdoorDeliveryCar_Property_OutdoorDeliveryOrder, 'event_time', 'Number');
   // console.log(droneOrderCounts);

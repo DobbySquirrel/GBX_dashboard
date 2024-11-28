@@ -18,6 +18,7 @@ export default {
         'OutdoorDeliveryCar_Property/OutdoorDeliveryCar_Property_OutdoorCarState.csv',
         'DeliveryDrone_Property/DeliveryDrone_Property_DroneState.csv',
         'Box/Box_owner.csv',
+        'User_Score/User_Score_Record.csv'
       ],
       lowFrequency: [
         'DeliveryDrone_Property/DeliveryDrone_Property_DroneDeliveryOrder.csv',
@@ -54,8 +55,8 @@ export default {
       fetchFiles([...fileConfig.highFrequency, ...fileConfig.lowFrequency]);
 
       // 定时刷新
-      setInterval(() => fetchFiles(fileConfig.highFrequency), 10000000); // 10秒
-      setInterval(() => fetchFiles(fileConfig.lowFrequency), 10000000);  // 10秒
+      setInterval(() => fetchFiles(fileConfig.highFrequency), 1000000); // 10秒
+      setInterval(() => fetchFiles(fileConfig.lowFrequency), 1000000);  // 10秒
     });
 
     return {};

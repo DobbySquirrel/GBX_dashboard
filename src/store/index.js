@@ -15,6 +15,7 @@ export const useDataStore = defineStore('data', {
       outputDelivery: null,
       recycleDelivery: null,
       boxOwner: null,
+      userScoreRecord: null
     }
   }),
 
@@ -33,7 +34,8 @@ export const useDataStore = defineStore('data', {
         'InputDelivery': 'inputDelivery',
         'OutputDelivery': 'outputDelivery',
         'RecycleDelivery': 'recycleDelivery',
-        'Box_owner': 'boxOwner'
+        'Box_owner': 'boxOwner',
+        'User_Score_Record': 'userScoreRecord'
       };
 
       // 遍历映射表查找匹配的文件名
@@ -65,6 +67,7 @@ export const useDataStore = defineStore('data', {
         outputDelivery: null,
         recycleDelivery: null,
         boxOwner: null,
+        userScoreRecord: null
       };
     }
   }

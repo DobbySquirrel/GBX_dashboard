@@ -10,7 +10,7 @@ import * as echarts from "echarts";
 export default {
   name: "UserScoreBarChart",
   props: {
-    Box_owner: {
+    userScoreRecord: {
       type: [String, null],
       required: true,
     },
@@ -21,7 +21,7 @@ export default {
     };
   },
   watch: {
-    Box_owner: {
+    userScoreRecord: {
       handler(newVal) {
         if (newVal) {
           this.updateChartData(newVal);
@@ -31,8 +31,8 @@ export default {
     }
   },
   mounted() {
-    if (this.Box_owner) {
-      this.updateChartData(this.Box_owner);
+    if (this.userScoreRecord) {
+      this.updateChartData(this.userScoreRecord);
     }
     window.addEventListener('resize', this.handleResize);
   },
@@ -61,7 +61,6 @@ export default {
           const hour = timeString.substring(9, 11);
           const minute = timeString.substring(11, 13);
           const second = timeString.substring(13, 15);
-
           // 创建 UTC 时间
           return new Date(Date.UTC(
             parseInt(year),
@@ -81,10 +80,10 @@ export default {
       const data = lines.slice(1).map(line => {
         const values = line.split(",");
         return {
-          eventTime: formatTime(values[0]?.trim()),    // 使用新的时间格式化方法
-          Owner: values[4]?.trim() || 'N/A',
-          status: values[3]?.trim() || 'N/A',
-          RFID: values[5]?.trim() || 'N/A'
+          eventTime: formatTime(values[1]?.trim()),    // 使用新的时间格式化方法
+          RFID: values[2]?.trim() || 'N/A',
+          Owner: values[5]?.trim() || 'N/A',
+          status: values[6]?.trim() || 'N/A'
         };
       });
 // 按时间顺序对所有记录进行排序
@@ -200,7 +199,11 @@ Object.values(boxCycles).forEach(boxRecords => {
             color: "#44652a",
             interval: 0,
             rotate: 30,
-            fontSize: 9
+            fontSize: 9,
+            formatter: function(value) {
+              // 如果字符串长度超过4，显示后4位
+              return value.length > 4 ? value.slice(-4) : value;
+            }
           }
         },
         yAxis: {
