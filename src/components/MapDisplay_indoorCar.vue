@@ -113,11 +113,11 @@ export default {
       const [x, y] = this.convertCoordinates(coord);
       return [x, y];  // 确保每个点都是数组格式
     });
-    console.log(convertedIndoorCarRoute); 
+    // console.log(convertedIndoorCarRoute); 
     // 获取转换后的各位置坐标
     const e3LabCoords = this.convertCoordinates(locations['E3 Lab']);
 
-    console.log(e3LabCoords); 
+    // console.log(e3LabCoords); 
     const helipadCoords = this.convertCoordinates(locations['Helipad']);
     const lockerCoords = this.convertCoordinates(locations['Locker']);
     const tableCoords = this.convertCoordinates(locations['Table']);

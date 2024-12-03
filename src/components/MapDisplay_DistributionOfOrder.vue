@@ -64,7 +64,7 @@ const calculateAreaCounts = () => {
       // 添加过滤逻辑，只保留 Owner 为 Station_1 的数据
       const filteredDroneData = droneData.filter(order => order.owner === 'Station_1')
       
-      console.log('Parsed Drone Data:', filteredDroneData)
+      // console.log('Parsed Drone Data:', filteredDroneData)
       filteredDroneData.forEach(order => {
         const area = order.ReceiverAddress
         if (area) {
@@ -75,7 +75,7 @@ const calculateAreaCounts = () => {
 
     if (props.IndoorDeliveryCar_Property_IndoorDeliveryOrder) {
       const indoorData = parseCsvData(props.IndoorDeliveryCar_Property_IndoorDeliveryOrder)
-      console.log('Parsed Indoor Data:', indoorData)
+      // console.log('Parsed Indoor Data:', indoorData)
       indoorData.forEach(order => {
         const area = order.Area
         if (area) {
