@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { getObject } from '@/api/obs_chart.js';
 import { useDataStore } from '../store';
 
@@ -34,29 +34,50 @@ export default {
     const fetchFiles = async (files) => {
       store.setLoading(true);
       try {
-        const promises = files.map(file => 
-          getObject('gbxbox1', file)
-            .then(content => {
-              if (content) {
-                store.updateData(file, content);
-              }
-            })
-        );
+        const promises = files.map(async file => {
+          try {
+            const content = await getObject('gbxbox1', file);
+            if (content) {
+              console.log(`Successfully fetched ${file}`);
+              store.updateData(file, content);
+            } else {
+              console.error(`Empty content received for ${file}`);
+            }
+          } catch (error) {
+            console.error(`Error fetching ${file}:`, error);
+          }
+        });
         
         await Promise.all(promises);
+      } catch (error) {
+        console.error('Batch fetch error:', error);
       } finally {
         store.setLoading(false);
       }
     };
 
     onMounted(() => {
-      store.initializeData(); // 初始化数据
+      store.initializeData();
+      
       // 初始加载
       fetchFiles([...fileConfig.highFrequency, ...fileConfig.lowFrequency]);
 
-      // 定时刷新
-      setInterval(() => fetchFiles(fileConfig.highFrequency), 3000); 
-      setInterval(() => fetchFiles(fileConfig.lowFrequency), 60000); 
+      // 使用 ref 存储定时器ID以便清理
+      const highFrequencyTimer = setInterval(() => {
+        console.log('Fetching high frequency files...');
+        fetchFiles(fileConfig.highFrequency);
+      }, 3000);
+      
+      const lowFrequencyTimer = setInterval(() => {
+        console.log('Fetching low frequency files...');
+        fetchFiles(fileConfig.lowFrequency);
+      }, 60000);
+
+      // 组件卸载时清理定时器
+      onUnmounted(() => {
+        clearInterval(highFrequencyTimer);
+        clearInterval(lowFrequencyTimer);
+      });
     });
 
     return {};    
