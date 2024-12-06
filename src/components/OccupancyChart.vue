@@ -134,11 +134,11 @@ watch: {
 
     // 计算每种类型的激活数量
     const outdoorCarActivated = countActivatedRows(OutdoorCarState, 'Outdoor');
-    const indoorCarActivated = countActivatedRows(IndoorCarState, 'Indoor');
+    const indoorCarActivated = 1; // 强制设置为1
     const droneActivated = countActivatedRows(DroneState, 'Drone');
     const lockerActivated = countActivatedRows(LockerState, 'Locker');
 
-    // 直接设置激活值
+    // 设置激活值
     this.ActivatedValue = [
       { value: lockerActivated, symbol: this.getSymbolForVehicleType('Locker'), symbolRepeat: 'true', symbolSize: ["60%", "60%"] },
       { value: indoorCarActivated, symbol: this.getSymbolForVehicleType('Indoor_Car'), symbolRepeat: 'true', symbolSize: ["70%", "50%"] },
@@ -175,7 +175,7 @@ watch: {
       var chartDom = document.getElementById('OccupancyChart');
       this.myChart = echarts.init(chartDom);
       
-      // 直接设置固定值
+      // 所有值都设为1
       this.ActivatedValue = [
         { value: 1, symbol: this.getSymbolForVehicleType('Locker'), symbolRepeat: 'true', symbolSize: ["60%", "60%"] },
         { value: 1, symbol: this.getSymbolForVehicleType('Indoor_Car'), symbolRepeat: 'true', symbolSize: ["70%", "50%"] },
