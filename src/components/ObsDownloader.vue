@@ -17,10 +17,10 @@ export default {
         'Box/Box_owner.csv',
         'User_Score/Score_Record.csv',
         'DeliveryDrone_Property/DeliveryDrone_Property_DroneDeliveryOrder.csv',
-        'IndoorDeliveryCar_Property/IndoorDeliveryCar_Property_IndoorDeliveryOrder.csv',
         'OutdoorDeliveryCar_Property/OutdoorDeliveryCar_Property_OutdoorDeliveryOrder.csv',
       ],
       lowFrequency: [
+        'IndoorDeliveryCar_Property/IndoorDeliveryCar_Property_IndoorDeliveryOrder.csv',
         'Delivery_Locker_Property/Delivery_Locker_Property_InputDelivery.csv',
         'Delivery_Locker_Property/Delivery_Locker_Property_OutputDelivery.csv',
         'IndoorDeliveryCar_Property/IndoorDeliveryCar_Property_IndoorCarState.csv',
