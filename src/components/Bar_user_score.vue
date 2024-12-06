@@ -23,7 +23,7 @@ export default {
   watch: {
     userScoreRecord: {
       handler(newVal) {
-        console.log("userScoreRecord updated: ", newVal);
+        // console.log("userScoreRecord updated: ", newVal);
         if (newVal) {
           this.updateChartData(newVal);
         }
@@ -32,14 +32,14 @@ export default {
     }
   },
   mounted() {
-    console.log("Component mounted, userScoreRecord: ", this.userScoreRecord);
+    // console.log("Component mounted, userScoreRecord: ", this.userScoreRecord);
     if (this.userScoreRecord) {
       this.updateChartData(this.userScoreRecord);
     }
     window.addEventListener('resize', this.handleResize);
   },
   unmounted() {
-    console.log("Component unmounted");
+    // console.log("Component unmounted");
     window.removeEventListener('resize', this.handleResize);
     if (this.myChart) {
       this.myChart.dispose();
@@ -47,9 +47,9 @@ export default {
   },
   methods: {
     updateChartData(csvData) {
-      console.log("Updating chart data with CSV: ", csvData);
+      // console.log("Updating chart data with CSV: ", csvData);
       const parsedData = this.parseCsvData(csvData);
-      console.log("Parsed data: ", parsedData);
+      // console.log("Parsed data: ", parsedData);
       this.renderBarChart(parsedData);
     },
 
@@ -60,16 +60,16 @@ export default {
       }
 
       const lines = csvData.trim().split("\n");
-      console.log("CSV lines: ", lines);
+      // console.log("CSV lines: ", lines);
       const data = lines.slice(1).map(line => {
         const values = line.split(",");
-        console.log("Parsed line values: ", values);
+        // console.log("Parsed line values: ", values);
         return {
           phone: values[0]?.trim() || 'N/A',
           score: parseInt(values[1]?.trim()) || 0,
         };
       });
-      console.log("Final parsed data: ", data);
+      // console.log("Final parsed data: ", data);
       return data;
     },
 
@@ -81,13 +81,13 @@ export default {
     },
 
     renderBarChart(data) {
-      console.log("Rendering bar chart with data: ", data);
+      // console.log("Rendering bar chart with data: ", data);
       // 按分数排序
       data.sort((a, b) => b.score - a.score);
 
       var chartDom = document.getElementById("UserScoreBarChart");
       if (!chartDom) {
-        console.error("Chart DOM element not found");
+        // console.error("Chart DOM element not found");
         return;
       }
       var myChart = echarts.init(chartDom);

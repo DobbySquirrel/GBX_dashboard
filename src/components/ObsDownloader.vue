@@ -14,9 +14,6 @@ export default {
     // 文件列表配置
     const fileConfig = {
       highFrequency: [
-        'IndoorDeliveryCar_Property/IndoorDeliveryCar_Property_IndoorCarState.csv',
-        'OutdoorDeliveryCar_Property/OutdoorDeliveryCar_Property_OutdoorCarState.csv',
-        'DeliveryDrone_Property/DeliveryDrone_Property_DroneState.csv',
         'Box/Box_owner.csv',
         'User_Score/Score_Record.csv'
       ],
@@ -24,6 +21,9 @@ export default {
         'DeliveryDrone_Property/DeliveryDrone_Property_DroneDeliveryOrder.csv',
         'Delivery_Locker_Property/Delivery_Locker_Property_InputDelivery.csv',
         'Delivery_Locker_Property/Delivery_Locker_Property_OutputDelivery.csv',
+        'IndoorDeliveryCar_Property/IndoorDeliveryCar_Property_IndoorCarState.csv',
+        'OutdoorDeliveryCar_Property/OutdoorDeliveryCar_Property_OutdoorCarState.csv',
+        'DeliveryDrone_Property/DeliveryDrone_Property_DroneState.csv',
         'Delivery_Locker_Property/Delivery_Locker_Property_RecycleInDelivery.csv',
         'Delivery_Locker_Property/Delivery_Locker_Property_OutputDelivery.csv',
         'IndoorDeliveryCar_Property/IndoorDeliveryCar_Property_IndoorDeliveryOrder.csv',

@@ -99,129 +99,62 @@ watch: {
   parseCsvData(OutdoorCarState, IndoorCarState, DroneState, LockerState) {
     // Helper function to count the number of activated rows
     const countActivatedRows = (csvData, name) => {
+      // 如果数据为空，返回0
+      if (!csvData || csvData.trim() === '') {
+        return 0;
+      }
+
       const lines = csvData.trim().split('\n');
-      const headers = lines[0].split(','); // 假设 CSV 数据有头部
+      // 如果只有头部或没有数据，返回0
+      if (lines.length <= 1) {
+        return 0;
+      }
+
+      const headers = lines[0].split(',');
       const data = lines.slice(1).map(line => {
         const values = line.split(',');
         return headers.reduce((obj, header, index) => {
-          obj[header.trim()] = values[index].trim();
+          obj[header.trim()] = values[index] ? values[index].trim() : '';
           return obj;
         }, {});
       });
 
+      // 简化状态判断逻辑
+      let activeCount = 0;
       if (name === "Outdoor" || name === "Indoor") {
-        // 对 Outdoor/Indoor 根据 device_id 和 Status 进行去重并计数
-        const activeDevices = new Set();
-        const unactivatedDevices = new Set();
-        
-        data.forEach(row => {
-          if (row.Status === "Active") {
-            activeDevices.add(row.Number);
-          } else if (row.Status === "UnActivated") {
-            unactivatedDevices.add(row.Number);
-          }
-        });
-
-        // // 返回 Active 设备与 Unactivated 设备的差值
-        // return Math.max(activeDevices.size - unactivatedDevices.size, 0);
-
-              // 计算 lockedCells 和 unlockedCells 的差集
-        const difference = new Set([...activeDevices].filter(cell => !unactivatedDevices.has(cell)));
-
-        // 返回差集的长度
-        return difference.size;
-
+        activeCount = data.filter(row => row.Status === "Active").length;
       } else if (name === "Drone") {
-        // 对 Drone 根据 device_id 和 State 进行去重并计数
-        const inFlightDevices = new Set();
-        const unactivatedDevices = new Set();
-
-        data.forEach(row => {
-          if (row.State === "Active") {
-            inFlightDevices.add(row.device_id);
-          } else if (row.State === "UnActivated") {
-            unactivatedDevices.add(row.device_id);
-          }
-        });
-
-        // 返回 In Flight 设备与 Unactivated 设备的差值
-
-                    // 计算 lockedCells 和 unlockedCells 的差集
-        const difference = new Set([...inFlightDevices].filter(cell => !unactivatedDevices.has(cell)));
-
-        // 返回差集的长度
-        return difference.size;
-
+        activeCount = data.filter(row => row.State === "Active").length;
       } else if (name === "Locker") {
-        // 对 Locker 根据 CellNumber 进行去重并计算差集
-        const lockedCells = new Set();
-        const unlockedCells = new Set();
-
-        data.forEach(row => {
-          if (row.Status === "Active") {
-            lockedCells.add(row.CellNumer);
-          } else if (row.Status === "UnActivated") {
-            unlockedCells.add(row.CellNumer);
-          }
-        });
-
-        // 计算 lockedCells 和 unlockedCells 的差集
-        const difference = new Set([...lockedCells].filter(cell => !unlockedCells.has(cell)));
-
-        // 返回差集的长度
-        return difference.size;
+        activeCount = data.filter(row => row.Status === "Active").length;
       }
 
-      return 0; // 默认返回值
+      return Math.min(activeCount, 1); // 确保返回值不超过1
     };
 
-    // 计算每种车辆类型的激活数量
+    // 计算每种类型的激活数量
     const outdoorCarActivated = countActivatedRows(OutdoorCarState, 'Outdoor');
     const indoorCarActivated = countActivatedRows(IndoorCarState, 'Indoor');
     const droneActivated = countActivatedRows(DroneState, 'Drone');
     const lockerActivated = countActivatedRows(LockerState, 'Locker');
 
-    // Define vehicle inventory for each type
-    const Vehicle_inventory = {
-      Locker: 1,
-      Drone: 1,
-      Indoor_Car: 1,
-      Outdoor_Car: 1,
-    };
-
-    // Calculate unactivated counts based on inventory
-    const outdoorCarUnactivated = Vehicle_inventory.Outdoor_Car - outdoorCarActivated;
-    const indoorCarUnactivated = Vehicle_inventory.Indoor_Car - indoorCarActivated;
-    const droneUnactivated = Vehicle_inventory.Drone - droneActivated;
-    const lockerUnactivated = Vehicle_inventory.Locker - lockerActivated;
-
-    // Ensure counts are valid (non-negative)
-    const validOutdoorCarActivated = Math.min(outdoorCarActivated, Vehicle_inventory.Outdoor_Car);
-    const validIndoorCarActivated = Math.min(indoorCarActivated, Vehicle_inventory.Indoor_Car);
-    const validDroneActivated = Math.min(droneActivated, Vehicle_inventory.Drone);
-    const validLockerActivated = Math.min(lockerActivated, Vehicle_inventory.Locker);
-
-    const validOutdoorCarUnactivated = Math.max(outdoorCarUnactivated, 0);
-    const validIndoorCarUnactivated = Math.max(indoorCarUnactivated, 0);
-    const validDroneUnactivated = Math.max(droneUnactivated, 0);
-    const validLockerUnactivated = Math.max(lockerUnactivated, 0);
-
-    // Store the calculated activated and unactivated values
+    // 直接设置激活值
     this.ActivatedValue = [
-      { value: validLockerActivated, symbol: this.getSymbolForVehicleType('Locker'),symbolRepeat:'true',symbolSize: ["60%" , "60%" ]},
-      { value: validIndoorCarActivated, symbol: this.getSymbolForVehicleType('Indoor_Car'),symbolRepeat:'true',symbolSize: ["70%" , "50%" ] },
-      { value: validOutdoorCarActivated, symbol: this.getSymbolForVehicleType('Outdoor_Car'),symbolRepeat:'true',symbolSize: ["70%" , "50%" ]},
-      { value: validDroneActivated, symbol: this.getSymbolForVehicleType('Drone'),symbolRepeat:'true',symbolSize: ["65%" , "65%" ] },
+      { value: lockerActivated, symbol: this.getSymbolForVehicleType('Locker'), symbolRepeat: 'true', symbolSize: ["60%", "60%"] },
+      { value: indoorCarActivated, symbol: this.getSymbolForVehicleType('Indoor_Car'), symbolRepeat: 'true', symbolSize: ["70%", "50%"] },
+      { value: outdoorCarActivated, symbol: this.getSymbolForVehicleType('Outdoor_Car'), symbolRepeat: 'true', symbolSize: ["70%", "50%"] },
+      { value: droneActivated, symbol: this.getSymbolForVehicleType('Drone'), symbolRepeat: 'true', symbolSize: ["65%", "65%"] }
     ];
 
+    // 设置总数值（都为1）
     this.UnactivatedValue = [
-      { value: Vehicle_inventory.Locker, symbol:  this.getSymbolForVehicleType('Locker'),symbolRepeat:'true',animationDuration: 0,symbolSize: ["60%" , "60%" ]},
-      { value: Vehicle_inventory.Indoor_Car, symbol: this.getSymbolForVehicleType('Indoor_Car'),symbolRepeat: 'true',animationDuration: 0,symbolSize: ["70%" , "50%" ]},
-      { value: Vehicle_inventory.Outdoor_Car, symbol: this.getSymbolForVehicleType('Outdoor_Car') ,symbolRepeat:  'true',animationDuration: 0,symbolSize: ["70%" , "50%" ]},
-      { value: Vehicle_inventory.Drone, symbol: this.getSymbolForVehicleType('Drone'),symbolRepeat:  'true',animationDuration: 0,symbolSize: ["65%" , "65%" ]},
+      { value: 1, symbol: this.getSymbolForVehicleType('Locker'), symbolRepeat: 'true', animationDuration: 0, symbolSize: ["60%", "60%"] },
+      { value: 1, symbol: this.getSymbolForVehicleType('Indoor_Car'), symbolRepeat: 'true', animationDuration: 0, symbolSize: ["70%", "50%"] },
+      { value: 1, symbol: this.getSymbolForVehicleType('Outdoor_Car'), symbolRepeat: 'true', animationDuration: 0, symbolSize: ["70%", "50%"] },
+      { value: 1, symbol: this.getSymbolForVehicleType('Drone'), symbolRepeat: 'true', animationDuration: 0, symbolSize: ["65%", "65%"] }
     ];
 
-    // Render the chart with the updated values
+    // 更新图表
     this.updateChart();
   },
 
@@ -241,6 +174,22 @@ watch: {
     initChart() {
       var chartDom = document.getElementById('OccupancyChart');
       this.myChart = echarts.init(chartDom);
+      
+      // 直接设置固定值
+      this.ActivatedValue = [
+        { value: 1, symbol: this.getSymbolForVehicleType('Locker'), symbolRepeat: 'true', symbolSize: ["60%", "60%"] },
+        { value: 1, symbol: this.getSymbolForVehicleType('Indoor_Car'), symbolRepeat: 'true', symbolSize: ["70%", "50%"] },
+        { value: 1, symbol: this.getSymbolForVehicleType('Outdoor_Car'), symbolRepeat: 'true', symbolSize: ["70%", "50%"] },
+        { value: 1, symbol: this.getSymbolForVehicleType('Drone'), symbolRepeat: 'true', symbolSize: ["65%", "65%"] }
+      ];
+
+      this.UnactivatedValue = [
+        { value: 1, symbol: this.getSymbolForVehicleType('Locker'), symbolRepeat: 'true', animationDuration: 0, symbolSize: ["60%", "60%"] },
+        { value: 1, symbol: this.getSymbolForVehicleType('Indoor_Car'), symbolRepeat: 'true', animationDuration: 0, symbolSize: ["70%", "50%"] },
+        { value: 1, symbol: this.getSymbolForVehicleType('Outdoor_Car'), symbolRepeat: 'true', animationDuration: 0, symbolSize: ["70%", "50%"] },
+        { value: 1, symbol: this.getSymbolForVehicleType('Drone'), symbolRepeat: 'true', animationDuration: 0, symbolSize: ["65%", "65%"] }
+      ];
+
       this.updateChart();
     },
 

@@ -54,14 +54,12 @@ return{
      this.initChart(); 
     // 添加窗口大小变化监听
     window.addEventListener('resize', this.handleResize);
-    if (this.DeliveryDrone_Property_DroneDeliveryOrder && this.IndoorDeliveryCar_Property_IndoorDeliveryOrder && this.OutdoorDeliveryCar_Property_OutdoorDeliveryOrder) {
-      this.unifiedData = this.parseCsvData(
-        this.DeliveryDrone_Property_DroneDeliveryOrder,
-        this.IndoorDeliveryCar_Property_IndoorDeliveryOrder,
-        this.OutdoorDeliveryCar_Property_OutdoorDeliveryOrder,
-      );
-      this.updateChart();
-    }
+    this.unifiedData = this.parseCsvData(
+      this.DeliveryDrone_Property_DroneDeliveryOrder,
+      this.IndoorDeliveryCar_Property_IndoorDeliveryOrder,
+      this.OutdoorDeliveryCar_Property_OutdoorDeliveryOrder,
+    );
+    this.updateChart();
 },
   unmounted() {
     // 组件销毁时移除监听
@@ -69,22 +67,14 @@ return{
   },
   methods:{
         onDataUpdate() {
-    // 检查所有本地属性是否都有最新数据
-    if (
-      this.localDeliveryDrone_Property_DroneDeliveryOrder &&
-      this.localIndoorDeliveryCar_Property_IndoorDeliveryOrder &&
+    this.unifiedData = this.parseCsvData(
+      this.localDeliveryDrone_Property_DroneDeliveryOrder,
+      this.localIndoorDeliveryCar_Property_IndoorDeliveryOrder,
       this.localOutdoorDeliveryCar_Property_OutdoorDeliveryOrder
-    ) {
-      // 使用本地数据进行解析和图表更新
-      this.unifiedData = this.parseCsvData(
-        this.localDeliveryDrone_Property_DroneDeliveryOrder,
-        this.localIndoorDeliveryCar_Property_IndoorDeliveryOrder,
-        this.localOutdoorDeliveryCar_Property_OutdoorDeliveryOrder
-      );
-      this.updateChart();
-    }
+    );
+    this.updateChart();
   },
-parseCsvData(DeliveryDrone_Property_DroneDeliveryOrder, IndoorDeliveryCar_Property_IndoorDeliveryOrder, OutdoorDeliveryCar_Property_OutdoorDeliveryOrder) {
+parseCsvData(DroneData, IndoorData, OutdoorData) {
   const formatTime = (timeString) => {
     try {
       // 解析时间字符串，例如："20241107T092711Z"
@@ -161,12 +151,9 @@ parseCsvData(DeliveryDrone_Property_DroneDeliveryOrder, IndoorDeliveryCar_Proper
     return filteredLines.join('\n');
   };
 
-  const filteredDroneData = filterDroneData(DeliveryDrone_Property_DroneDeliveryOrder);
-
-  // 使用过滤后的数据进行计算
-  const droneOrderCounts = countOrderNumbersByTime(filteredDroneData, 'event_time', 'OrderNumber');
-  const indoorOrderCounts = countOrderNumbersByTime(IndoorDeliveryCar_Property_IndoorDeliveryOrder, 'event_time', 'Number');
-  const outdoorOrderCounts = countOrderNumbersByTime(OutdoorDeliveryCar_Property_OutdoorDeliveryOrder, 'event_time', 'Number');
+  const droneOrderCounts = DroneData ? countOrderNumbersByTime(filterDroneData(DroneData), 'event_time', 'OrderNumber') : {};
+  const indoorOrderCounts = IndoorData ? countOrderNumbersByTime(IndoorData, 'event_time', 'Number') : {};
+  const outdoorOrderCounts = OutdoorData ? countOrderNumbersByTime(OutdoorData, 'event_time', 'Number') : {};
   // console.log(droneOrderCounts);
   // Aggregate data into unified timestamps
   const allEventTimes = new Set([...Object.keys(droneOrderCounts), ...Object.keys(indoorOrderCounts), ...Object.keys(outdoorOrderCounts)]);
