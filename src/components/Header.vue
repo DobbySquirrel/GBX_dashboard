@@ -158,11 +158,11 @@ const energyCost = computed(() => {
     const lines = props.Box_owner.trim().split("\n");
     const dataRows = lines.slice(1); // 跳过表头行
     
-    // 统计 product_id 为 66dd1bb4eff8e33e5f3f233f 的数据行数
+    // 计算 Status 为 'RecycleInDelivery' 的数量
     const count = dataRows.filter(line => {
       const values = line.split(",");
-      const product_id = values[1]?.trim();
-      return product_id === '66dd1bb4eff8e33e5f3f233f';
+      const status = values[3]?.trim();
+      return status === 'RecycleInDelivery';
     }).length;
     
     // 返回数量 * 0.5267
@@ -180,21 +180,15 @@ const mealBoxRecycling = computed(() => {
   try {
     const lines = props.Box_owner.trim().split("\n");
     const dataRows = lines.slice(1); // 跳过表头行
-
-    // 使用 Set 来存储唯一的 RFID
-    const uniqueRFIDs = new Set();
     
-    dataRows.forEach(line => {
+    // 计算 Status 为 'RecycleInDelivery' 的数量
+    const count = dataRows.filter(line => {
       const values = line.split(",");
       const status = values[3]?.trim();
-      const rfid = values[5]?.trim();
-      
-      if (status === 'RecycleOutDelivery' && rfid) {
-        uniqueRFIDs.add(rfid);
-      }
-    });
+      return status === 'RecycleInDelivery';
+    }).length;
 
-    return uniqueRFIDs.size;  // 返回唯一 RFID 的数量
+    return count;
     
   } catch (error) {
     console.error('Error calculating meal box recycling:', error);
