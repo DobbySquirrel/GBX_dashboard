@@ -55,7 +55,7 @@ export default {
       fetchFiles([...fileConfig.highFrequency, ...fileConfig.lowFrequency]);
 
       // 定时刷新
-      setInterval(() => fetchFiles(fileConfig.highFrequency), 60000); 
+      setInterval(() => fetchFiles(fileConfig.highFrequency), 5000); 
       setInterval(() => fetchFiles(fileConfig.lowFrequency), 60000); 
     });
 
