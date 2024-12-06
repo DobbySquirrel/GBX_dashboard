@@ -15,10 +15,12 @@ export default {
     const fileConfig = {
       highFrequency: [
         'Box/Box_owner.csv',
-        'User_Score/Score_Record.csv'
+        'User_Score/Score_Record.csv',
+        'DeliveryDrone_Property/DeliveryDrone_Property_DroneDeliveryOrder.csv',
+        'IndoorDeliveryCar_Property/IndoorDeliveryCar_Property_IndoorDeliveryOrder.csv',
+        'OutdoorDeliveryCar_Property/OutdoorDeliveryCar_Property_OutdoorDeliveryOrder.csv',
       ],
       lowFrequency: [
-        'DeliveryDrone_Property/DeliveryDrone_Property_DroneDeliveryOrder.csv',
         'Delivery_Locker_Property/Delivery_Locker_Property_InputDelivery.csv',
         'Delivery_Locker_Property/Delivery_Locker_Property_OutputDelivery.csv',
         'IndoorDeliveryCar_Property/IndoorDeliveryCar_Property_IndoorCarState.csv',
@@ -26,8 +28,6 @@ export default {
         'DeliveryDrone_Property/DeliveryDrone_Property_DroneState.csv',
         'Delivery_Locker_Property/Delivery_Locker_Property_RecycleInDelivery.csv',
         'Delivery_Locker_Property/Delivery_Locker_Property_OutputDelivery.csv',
-        'IndoorDeliveryCar_Property/IndoorDeliveryCar_Property_IndoorDeliveryOrder.csv',
-        'OutdoorDeliveryCar_Property/OutdoorDeliveryCar_Property_OutdoorDeliveryOrder.csv',
       ]
     };
 
@@ -55,7 +55,7 @@ export default {
       fetchFiles([...fileConfig.highFrequency, ...fileConfig.lowFrequency]);
 
       // 定时刷新
-      setInterval(() => fetchFiles(fileConfig.highFrequency), 5000); 
+      setInterval(() => fetchFiles(fileConfig.highFrequency), 3000); 
       setInterval(() => fetchFiles(fileConfig.lowFrequency), 60000); 
     });
 
