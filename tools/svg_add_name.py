@@ -1,8 +1,8 @@
 import xml.etree.ElementTree as ET
 
 # 加载SVG文件
-input_svg_path = "/mnt/c/Users/dobby/Desktop/gbx_box/gbx_vis/src/assets/hkust_map.svg"
-output_svg_path = "/mnt/c/Users/dobby/Desktop/gbx_box/gbx_vis/src/assets/hkust_map.svg"
+input_svg_path = "src/assets/data/hkust_gz_map.svg"
+output_svg_path = "src/assets/data/hkust_gz_map.svg"
 # output_svg_path = "/mnt/c/Users/dobby/Desktop/gbx_box/gbx_vis/src/assets/hkust_gz_map.svg"
 
 # 解析SVG文件
@@ -23,7 +23,7 @@ buildings = [
     "9D", "9C", "9B", "9A",
     "NN-8", "NN-6", "NN-9", "NN-2", "NN-3", "NN-1", "NN-4-5",
     "Data Center","Energy Center","Fire Control Center",
-    "Locker"
+    "Locker 3"
 
 ]
 

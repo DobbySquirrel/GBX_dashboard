@@ -20,11 +20,8 @@
             <el-col :span="5" class="left">
               <!-- 左上一: 占用率 -->
               <div class="left1 card">
-                <OccupancyChart
-                  :OutdoorDeliveryCar_Property_OutdoorCarState="data.outdoorCarState"
-                  :IndoorDeliveryCar_Property_IndoorCarState="data.indoorCarState"
-                  :DeliveryDrone_Property_DroneState="data.droneState"
-                  :Delivery_Locker_Property_InputDelivery="data.inputDelivery"
+                <RecycleCabinetOccupancyChart
+                    :Box_owner="data.boxOwner"
                 />
               </div>
 
@@ -38,24 +35,25 @@
               </div>
               <!-- 回收柜使用情况和回收柜占用情况饼图 -->
               <div class="left3 card">
-
-                <RecycleCabinetOccupancyChart
+                <OccupancyChart
+                  :OutdoorDeliveryCar_Property_OutdoorCarState="data.outdoorCarState"
+                  :IndoorDeliveryCar_Property_IndoorCarState="data.indoorCarState"
+                  :DeliveryDrone_Property_DroneState="data.droneState"
                   :Delivery_Locker_Property_InputDelivery="data.inputDelivery"
-                  :Delivery_Locker_Property_OutputDelivery="data.outputDelivery"
-                  :Delivery_Locker_Property_RecycleDelivery="data.recycleDelivery"
                 />
+
               </div>
             </el-col>
 
             <!-- 中间地图部分 -->
             <el-col :span="14" class="middle card">
               <!-- 暂时注释掉 MapDisplay_indoorCar 组件 -->
-              <!-- <MapDisplay_indoorCar
-                :OutdoorDeliveryCar_Property_OutdoorCarState="data.outdoorCarState"
-                :IndoorDeliveryCar_Property_IndoorCarState="data.indoorCarState"
-                :DeliveryDrone_Property_DroneState="data.droneState"
-              /> -->
-
+              
+              <MapDisplay_DistributionOfOrder
+                  :DeliveryDrone_Property_DroneDeliveryOrder="data.droneDeliveryOrder"
+                  :IndoorDeliveryCar_Property_IndoorDeliveryOrder="data.indoorDeliveryOrder"
+                  :OutdoorDeliveryCar_Property_OutdoorDeliveryOrder="data.outdoorDeliveryOrder"
+                />
               <CardDisplay
                 :Box_owner="data.boxOwner"
               />
@@ -69,11 +67,7 @@
                 />
               </div>
               <div class="right2 card">
-                <MapDisplay_DistributionOfOrder
-                  :DeliveryDrone_Property_DroneDeliveryOrder="data.droneDeliveryOrder"
-                  :IndoorDeliveryCar_Property_IndoorDeliveryOrder="data.indoorDeliveryOrder"
-                  :OutdoorDeliveryCar_Property_OutdoorDeliveryOrder="data.outdoorDeliveryOrder"
-                />
+                <MapDisplay_indoorCar :points-data="[[113.47953830802487, 22.894216859923475], [113.47872088332235, 22.892061020308077]]" />
               </div>
               <div class="right3 card">
                 <!-- <MapDisplay_outdoorCar

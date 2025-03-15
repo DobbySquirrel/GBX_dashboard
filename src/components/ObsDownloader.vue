@@ -66,12 +66,12 @@ export default {
       const highFrequencyTimer = setInterval(() => {
         console.log('Fetching high frequency files...');
         fetchFiles(fileConfig.highFrequency);
-      }, 3000);
+      }, 30000000);
       
       const lowFrequencyTimer = setInterval(() => {
         console.log('Fetching low frequency files...');
         fetchFiles(fileConfig.lowFrequency);
-      }, 60000);
+      }, 60000000);
 
       // 组件卸载时清理定时器
       onUnmounted(() => {

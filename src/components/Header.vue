@@ -9,7 +9,7 @@
             <h2 class="dashboard-title">
               <span style="color: #86a779">Smart GBX Dashboard </span>
               <span style="color: #44652a">for HKUST(GZ) </span>
-              <span style="color: #76c850">2024</span>
+              <span style="color: #76c850">2025</span>
             </h2>
             <hr style="border-top: 2px solid #cbebc4; width: 90%; margin: 5px 0 0 5px" />
           </div>

@@ -17,7 +17,7 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/mapv/, ""),
       },
     },
-    host: true
+    host: '0.0.0.0'
   },
   plugins: [
     vue(),

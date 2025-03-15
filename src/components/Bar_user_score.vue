@@ -99,7 +99,7 @@ export default {
             color: "#44652a",
             fontSize: 12
           },
-          top: "-2%",
+        
         },
         tooltip: {
           trigger: "axis",

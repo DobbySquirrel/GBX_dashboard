@@ -26,7 +26,7 @@ export default {
   data() {
     return {
       cards: [],
-      tableHeight: '90vh'
+      tableHeight: '20vh'
     };
   },
   computed: {
