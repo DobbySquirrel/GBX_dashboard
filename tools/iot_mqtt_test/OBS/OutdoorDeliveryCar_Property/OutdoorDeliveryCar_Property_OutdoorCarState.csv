@@ -1,0 +1,2 @@
+device_id,event_time,Number,Status,PositionX,PositionY,PositionZ,Latitude,Longitude
+66dd22421837002b28b3a3f3_OutdoorDeliveryCar_test,20241128T143955Z,CAR123456789,Active,123.45,678.90,0.00,34.052235,-118.243683

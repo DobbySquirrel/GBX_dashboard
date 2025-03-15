@@ -1,0 +1,2 @@
+event_time,product_id,device_id,Number,Area,BoxState,RFID,ReceiverPhone,OrderNumber,ReceiverName,SenderName,Owner,Converted_RFID
+20241128T143956Z,66dabbc81837002b28b35a69,66dabbc81837002b28b35a69_test,ID123456789,E2,In Use,GBX00003,8765,ORD987654321,8765,5678,indoor_car,47 42 58 30 30 30 30 33 00 00 00 00 00 00 00 00

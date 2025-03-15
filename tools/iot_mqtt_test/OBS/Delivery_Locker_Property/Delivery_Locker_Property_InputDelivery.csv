@@ -1,0 +1,2 @@
+device_id,event_time,Number,Status,CellNumer,CellStatus,RFID,owner,converted_RFID
+66dd1bb4eff8e33e5f3f233f_test,20241128T144007Z,IDL123,Active,C123,C124,GBX00002,Locker,47 42 58 30 30 30 30 32 00 00 00 00 00 00 00 00

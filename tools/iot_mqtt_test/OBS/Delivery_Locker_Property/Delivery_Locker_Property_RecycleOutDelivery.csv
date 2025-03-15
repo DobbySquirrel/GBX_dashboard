@@ -1,0 +1,4 @@
+device_id,event_time,BoxNumber,BoxList,RFID,Owner,Converted_RFID
+66dd1bb4eff8e33e5f3f233f_test,20241128T144004Z,2,"[1,2]",GBX00001,box_recycler,47 42 58 30 30 30 30 31 00 00 00 00 00 00 00 00
+66dd1bb4eff8e33e5f3f233f_test,20241128T144010Z,2,"[1,2]",GBX00002,box_recycler,47 42 58 30 30 30 30 32 00 00 00 00 00 00 00 00
+66dd1bb4eff8e33e5f3f233f_test,20241128T144015Z,2,"[1,2]",GBX00003,box_recycler,47 42 58 30 30 30 30 33 00 00 00 00 00 00 00 00

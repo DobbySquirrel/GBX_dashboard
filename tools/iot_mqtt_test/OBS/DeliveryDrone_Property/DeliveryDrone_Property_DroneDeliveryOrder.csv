@@ -1,0 +1,3 @@
+device_id,event_time,OrderNumber,RFID,ReceiverName,ReceiverPhone,ReceiverAddress,SenderName,SenderAddress,Time,converted_RFID,owner
+66dabbab1837002b28b35a64_test,20241128T150909Z,ORD123456789,GBX00001,6543,6543,10A,3456,yiling,123,47 42 58 30 30 30 30 31 00 00 00 00 00 00 00 00,Station_1
+66dabbab1837002b28b35a64_test,20241128T150911Z,ORD123456789,GBX00001,6543,6543,10A,3456,yiling,123,47 42 58 30 30 30 30 31 00 00 00 00 00 00 00 00,Drone_1

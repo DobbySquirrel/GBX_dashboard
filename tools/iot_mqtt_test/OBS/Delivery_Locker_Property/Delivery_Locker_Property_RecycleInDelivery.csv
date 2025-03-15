@@ -1,0 +1,3 @@
+device_id,event_time,BoxNumber,BoxList,RFID,Owner,Converted_RFID,RecyclerPhone
+66dd1bb4eff8e33e5f3f233f_test,20241128T144009Z,2,"[1,2]",GBX00002,recycle bin locker,47 42 58 30 30 30 30 32 00 00 00 00 00 00 00 00,4321
+66dd1bb4eff8e33e5f3f233f_test,20241128T144014Z,2,"[1,2]",GBX00003,recycle bin locker,47 42 58 30 30 30 30 33 00 00 00 00 00 00 00 00,6543
