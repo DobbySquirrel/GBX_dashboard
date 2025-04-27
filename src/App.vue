@@ -1,5 +1,6 @@
 <template>
-  <div class="common-layout">
+  <router-view v-if="$route.path !== '/'" />
+  <div v-else class="common-layout">
     <el-container>
       <!-- 加载状态显示 -->
       <!-- 头部 -->
@@ -49,11 +50,11 @@
             <el-col :span="14" class="middle card">
               <!-- 暂时注释掉 MapDisplay_indoorCar 组件 -->
               
-              <MapDisplay_DistributionOfOrder
+              <!-- <MapDisplay_DistributionOfOrder
                   :DeliveryDrone_Property_DroneDeliveryOrder="data.droneDeliveryOrder"
                   :IndoorDeliveryCar_Property_IndoorDeliveryOrder="data.indoorDeliveryOrder"
                   :OutdoorDeliveryCar_Property_OutdoorDeliveryOrder="data.outdoorDeliveryOrder"
-                />
+                /> -->
               <CardDisplay
                 :Box_owner="data.boxOwner"
               />
@@ -66,9 +67,9 @@
                   :Box_owner="data.boxOwner"
                 />
               </div>
-              <div class="right2 card">
+              <!-- <div class="right2 card">
                 <MapDisplay_indoorCar :points-data="[[113.47953830802487, 22.894216859923475], [113.47872088332235, 22.892061020308077]]" />
-              </div>
+              </div> -->
               <div class="right3 card">
                 <!-- <MapDisplay_outdoorCar
                   :Delivery_Locker_Property_InputDelivery="data.inputDelivery"
@@ -97,10 +98,10 @@ import OccupancyChart from "./components/OccupancyChart.vue";
 import OrderCountChart from "./components/OrderCountChart.vue";
 import RecycleCabinetOccupancyChart from "./components/RecycleCabinetOccupancyChart.vue";
 import RecycleBoxStatusPie from "./components/RecycleBoxStatusPie.vue";
-import MapDisplay_indoorCar from "./components/MapDisplay_indoorCar.vue";
+// import MapDisplay_indoorCar from "./components/MapDisplay_indoorCar.vue";
 import MapDisplay_outdoorCar from "./components/MapDisplay_outdoorCar.vue";
 import MapDisplay_drone from "./components/MapDisplay_drone.vue";
-import MapDisplay_DistributionOfOrder from "./components/MapDisplay_DistributionOfOrder.vue";
+// import MapDisplay_DistributionOfOrder from "./components/MapDisplay_DistributionOfOrder.vue";
 import { ElButton } from "element-plus";
 import { storeToRefs } from 'pinia';
 import Bar_user_score from "./components/Bar_user_score.vue";
@@ -111,14 +112,13 @@ export default {
     OrderCountChart,
     RecycleCabinetOccupancyChart,
     RecycleBoxStatusPie,
-    MapDisplay_indoorCar,
     ObsDownloader,
     ElButton,
     AppHeader,
     MapDisplay_outdoorCar,
     MapDisplay_drone,
     CardDisplay,
-    MapDisplay_DistributionOfOrder,
+    // MapDisplay_DistributionOfOrder,
     Bar_user_score,
   },
   
