@@ -111,8 +111,8 @@ import live_MapDisplay from "../components_vertical/live_MapDisplay.vue";
 import ObsDownloader from "../components_vertical/ObsDownloader.vue";
 import OccupancyChart from "../components_vertical/OccupancyChart.vue";
 import OrderCountChart from "../components_vertical/OrderCountChart.vue";
-import RecycleCabinetOccupancyChart from "../components_vertical/RecycleCabinetOccupancyChart.vue";
-import RecycleBoxStatusPie from "../components_vertical/RecycleBoxStatusPie.vue";
+import RecycleCabinetOccupancyChart from "../components_vertical/EnvironmentalBenfits.vue";
+import RecycleBoxStatusPie from "../components_vertical/RecycleBoxStatus.vue";
 import MapDisplay_DistributionOfOrder_nre from "../components_vertical/MapDisplay_DistributionOfOrder_nre.vue";
 import Bar_user_score from "../components_vertical/Bar_user_score.vue";
 import AreaTrafficFlow from "../components_vertical/AreaTrafficFlow.vue";
@@ -184,9 +184,9 @@ export default {
 .el-header {
   position: relative;
   flex-shrink: 0;
-  height: 8vh !important;
+  height: 15vh !important;
   padding: 5px;
-  min-height: 70px;
+  min-height: 150px;
   max-height: 300px;
   overflow: hidden;
   margin-bottom: 5px;
@@ -248,7 +248,7 @@ export default {
 
 .extra-chart-card {
   height: 18vh;
-  min-height: 450px;
+  min-height: 180px;
 }
 
 h3 {

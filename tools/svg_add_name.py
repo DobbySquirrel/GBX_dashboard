@@ -1,8 +1,8 @@
 import xml.etree.ElementTree as ET
 
 # 加载SVG文件
-input_svg_path = "/home/shenshuyu/GBX_dashboard/GBX_dashboard/src/assets/data/haibei_map.svg"
-output_svg_path = "/home/shenshuyu/GBX_dashboard/GBX_dashboard/src/assets/data/haibei_map.svg"
+input_svg_path = "/home/shenshuyu/GBX_dashboard/GBX_dashboard/public/hkust_map_with_station.svg"
+output_svg_path = "/home/shenshuyu/GBX_dashboard/GBX_dashboard/public/hkust_map_with_station.svg"
 # output_svg_path = "/mnt/c/Users/dobby/Desktop/gbx_box/gbx_vis/src/assets/hkust_gz_map.svg"
 
 # 解析SVG文件
@@ -22,7 +22,8 @@ buildings = [
     "10D", "10C", "10B", "10A",
     "9D", "9C", "9B", "9A",
     "NN-8", "NN-6", "NN-9", "NN-2", "NN-3", "NN-1", "NN-4-5",
-    "Data Center","Energy Center","Fire Control Center",
+    "Data Center","Energy Center","Fire Control Center","DongChong",
+    "A-4","A-3","A-2","A-1",
     "Locker 3"
 
 ]

@@ -1,13 +1,15 @@
 <template>
   <div class="location-tracker">
-    <div class="tracker-header">
-      <h2>配送设备位置追踪</h2>
-    </div>
+
+
+    <el-text class="mx-1" style="font-size: 16px; color: #44652a; font-weight: bold;"
+        >Location Tracker</el-text
+      >
     <div class="tracker-content">
       <div class="device-list">
         <TransitionGroup name="device-list">
           <div 
-            v-for="device in devices" 
+            v-for="device in filteredDevices" 
             :key="device.id" 
             class="device-card"
             :class="{'recently-updated': device.recentlyUpdated}"
@@ -56,6 +58,11 @@ export default {
     outdoorCarState: {
       type: String,
       default: null
+    },
+    pageType: {
+      type: String,
+      default: 'all', // 'drone', 'vehicle', 'all'
+      validator: (value) => ['drone', 'vehicle', 'all'].includes(value)
     }
   },
   data() {
@@ -82,6 +89,17 @@ export default {
           battery: 92,
           currentOrder: null,
           lastUpdate: '刚刚'
+        },
+        {
+          id: 'outdoor-car-001',
+          name: '室外无人车 #001',
+          type: 'outdoor-car',
+          status: '充电中',
+          location: '停车场',
+          coordinates: [113.47852336734121, 22.891218918887034],
+          battery: 45,
+          currentOrder: null,
+          lastUpdate: '5分钟前'
         }
       ],
       deviceIcons: {
@@ -101,9 +119,17 @@ export default {
     };
   },
   computed: {
-    selectedDeviceInfo() {
-      if (!this.selectedDevice) return null;
-      return this.devices.find(device => device.id === this.selectedDevice);
+    filteredDevices() {
+      if (this.pageType === 'all') {
+        return this.devices;
+      } else if (this.pageType === 'drone') {
+        return this.devices.filter(device => device.type === 'drone');
+      } else if (this.pageType === 'vehicle') {
+        return this.devices.filter(device => 
+          device.type === 'indoor-car' || device.type === 'outdoor-car'
+        );
+      }
+      return this.devices;
     }
   },
   methods: {
@@ -252,7 +278,7 @@ export default {
   border: 1px solid rgba(221, 221, 221, 0.4);
   border-radius: 8px;
   overflow: hidden;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgb(255, 255, 255);
   box-sizing: border-box;
   backdrop-filter: blur(2px);
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
@@ -281,7 +307,7 @@ export default {
 }
 
 .device-list {
-  width: 100%;
+  width: 95%;
   height: 100%;
   overflow-y: auto;
   padding: 8px;
@@ -442,13 +468,13 @@ export default {
 
 @keyframes pulse-update {
   0% {
-    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0.4);
+    box-shadow: 0 0 0 3px  rgba(82, 196, 26, 0.2);
   }
   70% {
-    box-shadow: 0 0 0 10px rgba(24, 144, 255, 0);
+    box-shadow: 0 0 0 3px  rgba(82, 196, 26, 0.2);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0);
+    box-shadow: 0 0 0 3px  rgba(82, 196, 26, 0.2);
   }
 }
 

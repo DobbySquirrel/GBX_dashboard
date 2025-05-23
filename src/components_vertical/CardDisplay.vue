@@ -6,109 +6,80 @@
       :max-height="tableHeight"
       :row-class-name="tableRowClassName"
     >
-      <el-table-column prop="event_time" label="Time" sortable />
-      <el-table-column prop="RFID" label="RFID" />
-      <el-table-column prop="Status" label="Status" />
-      <el-table-column prop="owner" label="Owner" />
-    </el-table>
+      <el-table-column prop="log_time" label="Log Time" sortable />
+      <el-table-column prop="box_id" label="Box ID" />
+      <el-table-column prop="status" label="Status" />
+      <el-table-column prop="location" label="Location" />
+      </el-table>
   </div>
 </template>
 
 <script>
+import socket from "../api/socket.js"; // Assuming you have a socket.js setup for client
+
 export default {
   name: "OrderCards",
-  props: {
-    Box_owner: {
-      type: [String, null],
-      required: true,
-    },
-  },
   data() {
     return {
       cards: [],
-      tableHeight: '20vh'
+      tableHeight: '30vh' // Keep this if you want a fixed height for the table
     };
   },
   computed: {
     sortedCards() {
+      // Create a shallow copy and sort in descending order by log_time (newest on top)
       return [...this.cards].sort((a, b) => {
-        const timeA = new Date(a.event_time);
-        const timeB = new Date(b.event_time);
-        return timeB - timeA; // 降序排列，最新的在前
+        // Assuming log_time is already a formatted time string
+        return b.log_time.localeCompare(a.log_time);
       });
     },
+    // You might want to adjust this to show the latest box status or ID
     latestBoxStatus() {
       const latestCard = this.sortedCards[0];
-      return latestCard ? latestCard.Status : 'N/A';
-    }
-  },
-  watch: {
-    Box_owner: {
-      handler(newVal) {
-        if (newVal) {
-          this.cards = this.parseCsvData(newVal);
-        }
-      },
-      immediate: true
+      return latestCard ? latestCard.status : 'N/A';
     }
   },
   methods: {
     tableRowClassName({ row, rowIndex }) {
+      // Can add highlight style for the latest row
+      if (rowIndex === 0) {
+        return 'latest-row';
+      }
       return '';
     },
 
-    formatTime(timeString) {
-      try {
-        // 解析时间字符串，例如："20241107T092711Z"
-        const year = timeString.substring(0, 4);
-        const month = timeString.substring(4, 6);
-        const day = timeString.substring(6, 8);
-        const hour = timeString.substring(9, 11);
-        const minute = timeString.substring(11, 13);
-        const second = timeString.substring(13, 15);
-
-        // 创建 UTC 时间
-        const utcDate = new Date(Date.UTC(
-          parseInt(year),
-          parseInt(month) - 1, // 月份从0开始
-          parseInt(day),
-          parseInt(hour),
-          parseInt(minute),
-          parseInt(second)
-        ));
-
-        // 转换为中国时区（UTC+8）
-        const chinaTime = new Date(utcDate.getTime());
-
-        // 格式化输出
-        return `${chinaTime.getFullYear()}/${String(chinaTime.getMonth() + 1).padStart(2, '0')}/${String(chinaTime.getDate()).padStart(2, '0')} ${String(chinaTime.getHours()).padStart(2, '0')}:${String(chinaTime.getMinutes()).padStart(2, '0')}`;
-      } catch (error) {
-        console.error('Error formatting time:', error);
-        return timeString;
-      }
-    },
-
-    parseCsvData(csvData) {
-      if (!csvData) return [];
-      
-      try {
-        const lines = csvData.trim().split("\n");
-        const dataRows = lines.slice(1).reverse(); // 反转数据行，跳过表头
-        // 不再限制行数，返回所有数据
-        return dataRows.map(line => {
-          const values = line.split(",");
-          return {
-            event_time: this.formatTime(values[0]?.trim() || 'N/A'),
-            RFID: values[5]?.trim() || 'N/A',
-            owner: values[4]?.trim() || 'N/A',
-            Status: values[3]?.trim() || 'N/A' // 直接使用原始状态
-          };
-        });
-      } catch (error) {
-        console.error('Error parsing CSV data:', error);
-        return [];
+    /**
+     * Handles incoming box_status_logs_update from the WebSocket.
+     * @param {Array<Object>} data - Array of box status log objects from the server.
+     */
+    handleBoxStatusLogsUpdate(data) {
+      if (data && Array.isArray(data)) {
+        // Map the raw data to the format expected by the table
+        this.cards = data.map(item => ({
+          log_time: item.timestamp || 'N/A', 
+          box_id: item.box_id || 'N/A',
+          status: item.status || 'N/A',
+          location: item.owner_id || 'N/A',
+          // Add other relevant fields from box_status_logs
+        }));
+        // console.log('更新箱子状态日志数据:', this.cards);
       }
     }
+  },
+  mounted() {
+    // Ensure socket is connected
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    // Subscribe to box_status_logs_update events
+    socket.on('box_status_logs_update', this.handleBoxStatusLogsUpdate);
+    // Emit a subscription request to the server to get initial data and continuous updates
+    socket.emit('subscribe_box_status_logs');
+  },
+  beforeUnmount() {
+    // Unsubscribe from the socket event to prevent memory leaks
+    socket.off('box_status_logs_update', this.handleBoxStatusLogsUpdate);
   }
 };
 </script>
@@ -117,12 +88,14 @@ export default {
 .table-display {
   margin: 0px;
   height: 30vh;
+  width: 100%; /* Ensure table container takes full width */
 }
 
 .el-table {
   --el-table-header-bg-color: #fefffe;
   --el-table-row-hover-bg-color: #f5faf7;
   font-size: 10px;
+  width: 100% !important; /* Force table width to 100% */
 }
 
 .el-table th {
@@ -136,5 +109,19 @@ export default {
   color: #606661;
   font-size: 10px;
 }
-</style>
 
+/* Ensure table rows take full width */
+.el-table__row {
+  width: 100%;
+}
+
+/* Ensure table cells are reasonably distributed */
+.el-table-column {
+  width: auto !important;
+}
+
+/* Add highlight style for the latest row */
+.latest-row {
+  background-color: #f0f9eb !important;
+}
+</style>
