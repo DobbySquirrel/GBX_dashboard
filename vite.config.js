@@ -17,11 +17,12 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/mapv/, ""),
       },
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'http://110.41.178.82:3000',
         changeOrigin: true
       }
     },
-    host: '0.0.0.0'
+    host: '0.0.0.0',
+    port: 5173
   },
   plugins: [
     vue(),

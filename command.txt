@@ -1,0 +1,9 @@
+# 列出所有screen会话
+screen -ls
+
+# 如果存在，关闭现有会话
+screen -X -S gbx_full quit
+screen -X -S gbx_server quit
+
+npm run start_server
+npm run start

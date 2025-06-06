@@ -4,7 +4,7 @@ import { Server } from 'socket.io';
 export function setupSocketIO(httpServer, pool) {
   const io = new Server(httpServer, {
     cors: {
-      origin: ['http://localhost:5173', 'http://localhost:8080'],
+      origin: ['http://localhost:5173', 'http://localhost:8080', 'http://110.41.178.82:5173'],
       methods: ['GET', 'POST'],
       credentials: true
     },
@@ -52,17 +52,16 @@ export function setupSocketIO(httpServer, pool) {
       return [];
     }
   };
-  // New helper function to get box recycle counts
   const getBoxRecycleCounts = async () => {
     try {
       const [rows] = await pool.query(`
         SELECT
           box_id,
-          COUNT(*) AS recycle_count
+          COUNT(*) as recycle_count
         FROM
           box_status_logs
         WHERE
-          status = '箱子已回收'
+          status = '绑定订单'
         GROUP BY
           box_id
       `);
@@ -86,7 +85,6 @@ export function setupSocketIO(httpServer, pool) {
             status = '绑定订单'
           ORDER BY
             timestamp DESC
-          LIMIT 100 -- Get the latest 100 binding events, adjust as needed
         `);
         return rows;
       } catch (error) {
@@ -154,6 +152,65 @@ export function setupSocketIO(httpServer, pool) {
       return parseFloat(averageHours.toFixed(2));
     } catch (error) {
       console.error('获取箱子平均回收周期失败:', error);
+      return 0;
+    }
+  };
+
+  // 添加在其他辅助函数后面
+  // Helper function to get current boxes in cabinet
+  const getCurrentInCabinetCount = async () => {
+    try {
+      const [rows] = await pool.query(`
+        SELECT COUNT(DISTINCT box_id) as in_cabinet_count
+        FROM box_status_logs
+        WHERE box_id IN (
+          SELECT box_id 
+          FROM box_status_logs 
+          WHERE status = '已送达快递柜'
+        ) 
+        AND box_id NOT IN (
+          SELECT box_id 
+          FROM box_status_logs 
+          WHERE status = '用户已取走'
+        )
+      `);
+      return rows[0].in_cabinet_count;
+    } catch (error) {
+      console.error('获取在柜包裹数量失败:', error);
+      return 0;
+    }
+  };
+
+  // Helper function to get daily new boxes count
+  const getDailyNewBoxesCount = async () => {
+    try {
+      const [rows] = await pool.query(`
+        SELECT 
+          DATE(timestamp) as date,
+          COUNT(DISTINCT box_id) as daily_new_boxes
+        FROM box_status_logs
+        WHERE status = '绑定订单'
+          AND DATE(timestamp) = CURDATE()
+        GROUP BY DATE(timestamp)
+      `);
+      return rows.length > 0 ? rows[0].daily_new_boxes : 0;
+    } catch (error) {
+      console.error('获取每日新箱子数量失败:', error);
+      return 0;
+    }
+  };
+
+  // 在其他辅助函数后面添加
+  const getTotalRecycledBoxCount = async () => {
+    try {
+      const [rows] = await pool.query(`
+        SELECT COUNT(DISTINCT box_id) as total_recycled_boxes
+        FROM box_status_logs
+        WHERE status = '箱子已回收'
+      `);
+      return rows[0].total_recycled_boxes;
+    } catch (error) {
+      console.error('获取总回收箱子数量失败:', error);
       return 0;
     }
   };
@@ -275,14 +332,29 @@ export function setupSocketIO(httpServer, pool) {
       const boxStatusCounts = await getBoxStatusCounts();
       socket.emit('box_status_counts_update', boxStatusCounts);
     });
+    // 新增：监听客户端订阅柜机状态更新
+    socket.on('subscribe_cabinet_status', async () => {
+      console.log('客户端订阅柜机状态更新:', socket.id);
+      const inCabinetCount = await getCurrentInCabinetCount();
+      socket.emit('cabinet_status_update', { inCabinetCount });
+    });
+    // 新增：监听客户端订阅每日新箱子数量
+    socket.on('subscribe_daily_new_boxes', async () => {
+      console.log('客户端订阅每日新箱子数量:', socket.id);
+      const dailyNewBoxes = await getDailyNewBoxesCount();
+      socket.emit('daily_new_boxes_update', { dailyNewBoxes });
+    });
+    // 新增：监听客户端订阅总回收箱子数量
+    socket.on('subscribe_total_recycled_boxes', async () => {
+      console.log('客户端订阅总回收箱子数量:', socket.id);
+      const totalRecycledBoxes = await getTotalRecycledBoxCount();
+      socket.emit('total_recycled_boxes_update', { totalRecycledBoxes });
+    });
     // 客户端断开连接
     socket.on('disconnect', () => {
       console.log('客户端断开连接:', socket.id);
     });
   });
-
-
-
 
   // 设置定时任务，定期检查数据库并推送更新
   const startDataUpdates = async () => {
@@ -296,6 +368,9 @@ export function setupSocketIO(httpServer, pool) {
     let lastBoxRecycleCountsData = null; // New: Record last box recycle counts data
     let lastBoxOrderBindingTimesData = null; // New: Record last box order binding times data
     let lastAverageRecycleCycleData = null; // New: Record last average recycle cycle data
+    let lastInCabinetCount = null;
+    let lastDailyNewBoxes = null;
+    let lastTotalRecycledBoxes = null;
 
     setInterval(async () => {
       try {
@@ -397,6 +472,30 @@ export function setupSocketIO(httpServer, pool) {
           lastAverageRecycleCycleData = currentAverageRecycleCycleData;
           io.emit('average_recycle_cycle_update', averageRecycleCycle);
           console.log('推送箱子平均回收周期更新 (小时):', averageRecycleCycle);
+        }
+
+        // Check and push current in-cabinet count updates
+        const inCabinetCount = await getCurrentInCabinetCount();
+        if (inCabinetCount !== lastInCabinetCount) {
+          lastInCabinetCount = inCabinetCount;
+          io.emit('cabinet_status_update', { inCabinetCount });
+          console.log('推送在柜包裹数量更新:', inCabinetCount);
+        }
+
+        // Check and push daily new boxes count updates
+        const dailyNewBoxes = await getDailyNewBoxesCount();
+        if (dailyNewBoxes !== lastDailyNewBoxes) {
+          lastDailyNewBoxes = dailyNewBoxes;
+          io.emit('daily_new_boxes_update', { dailyNewBoxes });
+          console.log('推送每日新箱子数量更新:', dailyNewBoxes);
+        }
+
+        // Check and push total recycled boxes count updates
+        const totalRecycledBoxes = await getTotalRecycledBoxCount();
+        if (totalRecycledBoxes !== lastTotalRecycledBoxes) {
+          lastTotalRecycledBoxes = totalRecycledBoxes;
+          io.emit('total_recycled_boxes_update', { totalRecycledBoxes });
+          console.log('推送总回收箱子数量更新:', totalRecycledBoxes);
         }
 
       } catch (error) {

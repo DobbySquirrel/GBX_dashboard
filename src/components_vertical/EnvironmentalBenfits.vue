@@ -9,6 +9,7 @@ import * as echarts from 'echarts';
 import { boxDataURI } from "../assets/symbols/BoxSymbol.js";
 import { paperboxDataURI } from "../assets/symbols/paperboxSymbol.js";
 import { treeDataURI } from "../assets/symbols/treeSymbol.js";
+
 import socket from "../api/socket.js"; // 直接导入 socket 实例
 import { onMounted, nextTick } from 'vue';
 
@@ -19,6 +20,7 @@ export default {
       myChart: null,
       chartInitialized: false,
       averageRecycleCycle: 0, // 添加这个变量来存储平均回收周期
+      totalRecycledBoxes: 0, // Added to store total recycled boxes
     };
   },
   methods: {
@@ -101,7 +103,7 @@ export default {
           top: 0
         },
         xAxis: [{
-          data: ['Recycling Box', 'Tree', 'Paper Box'],
+          data: ['Recycling Box', 'Tree Leaf', 'Paper Box'],
           axisTick: { show: false },
           axisLine: { show: false },
           axisLabel: {
@@ -136,7 +138,7 @@ export default {
             },
             data: [
               {
-                value: this.recycleBoxCount || 0,
+                value: this.totalRecycledBoxes || 0,
                 symbol: 'image://' + boxDataURI,
                 symbolRepeat: true,
                 symbolSize: ['30%', '20%'],
@@ -146,7 +148,7 @@ export default {
                 }
               },
               {
-                value: Math.floor((this.recycleBoxCount || 0) / 20),
+                value: Math.floor((this.recycleBoxCount || 0) * 2),
                 symbol: 'image://' + treeDataURI,
                 symbolRepeat: true,
                 symbolSize: ['12%', '12%'],
@@ -164,7 +166,7 @@ export default {
                 }
               },
               {
-                value: (this.recycleBoxCount || 0) * 5,
+                value: (this.recycleBoxCount || 0),
                 symbol: 'image://' + paperboxDataURI,
                 symbolRepeat: true,
                 symbolSize: ['45%', '22%'],
@@ -213,8 +215,8 @@ export default {
         grid: {
           left: '3%',
           right: '5%',
-          bottom: '5%',
-          top: '15%',
+          bottom: '0%',
+          top: '20%',
           containLabel: true
         },
       };
@@ -246,6 +248,15 @@ export default {
           // 订阅平均回收周期
           socket.emit('subscribe_average_recycle_cycle');
           socket.on('average_recycle_cycle_update', this.handleAverageRecycleCycleUpdate);
+
+          // 订阅总回收箱子数量
+          socket.emit('subscribe_total_recycled_boxes');
+          
+          // 监听总回收箱子数量更新
+          socket.on('total_recycled_boxes_update', (data) => {
+            this.totalRecycledBoxes = data.totalRecycledBoxes;
+            console.log('总回收箱子数量:', this.totalRecycledBoxes);
+          });
         } else {
           console.error('Socket.IO 实例未找到');
         }
@@ -262,6 +273,7 @@ export default {
     if (socket) {
       socket.off('box_recycle_counts_update', this.handleRecycleCountsUpdate);
       socket.off('average_recycle_cycle_update', this.handleAverageRecycleCycleUpdate);
+      socket.off('total_recycled_boxes_update');
     }
     
     if (this.myChart) {

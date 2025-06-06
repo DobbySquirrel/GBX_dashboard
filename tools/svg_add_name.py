@@ -1,8 +1,8 @@
 import xml.etree.ElementTree as ET
 
 # 加载SVG文件
-input_svg_path = "/home/shenshuyu/GBX_dashboard/GBX_dashboard/public/hkust_map_with_station.svg"
-output_svg_path = "/home/shenshuyu/GBX_dashboard/GBX_dashboard/public/hkust_map_with_station.svg"
+input_svg_path = "/root/GBX_dashboard/public/haibei_map.svg"
+output_svg_path = "/root/GBX_dashboard/public/haibei_map.svg"
 # output_svg_path = "/mnt/c/Users/dobby/Desktop/gbx_box/gbx_vis/src/assets/hkust_gz_map.svg"
 
 # 解析SVG文件

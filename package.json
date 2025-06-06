@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "server": "node server/index.js",
+    "start": "screen -dmS gbx_full concurrently \"npm run dev\"",
+    "start_server": "screen -dmS gbx_server npm run server"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
@@ -31,7 +34,8 @@
     "vue": "^3.4.29",
     "vue-echarts": "^7.0.3",
     "vue-router": "^4.4.5",
-    "vue3-baidu-map-gl": "^2.5.0"
+    "vue3-baidu-map-gl": "^2.5.0",
+    "websocket-stream": "^5.5.2"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",
@@ -39,9 +43,11 @@
     "sass": "^1.79.4",
     "sass-embedded": "^1.79.4",
     "sass-loader": "^12.6.0",
+    "terser": "^5.39.2",
     "unplugin-auto-import": "^0.18.3",
     "unplugin-element-plus": "^0.8.0",
     "unplugin-vue-components": "^0.27.4",
-    "vite": "^5.3.1"
+    "vite": "^6.3.5"
   }
 }
+

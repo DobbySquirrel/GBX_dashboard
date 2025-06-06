@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
 
 // 创建Socket.IO连接
-const socket = io('http://localhost:3000', {
+const socket = io('http://110.41.178.82:3000', {
   autoConnect: false,
   reconnection: true,
   reconnectionAttempts: 5,

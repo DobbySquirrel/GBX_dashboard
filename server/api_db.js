@@ -7,7 +7,7 @@ export function setupApiServer(pool, dbConfig) {
 
   // 中间件
   app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:8080'],
+    origin: ['http://localhost:5173', 'http://localhost:8080', 'http://110.41.178.82:5173'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
