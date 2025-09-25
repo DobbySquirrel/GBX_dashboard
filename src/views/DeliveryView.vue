@@ -5,7 +5,7 @@
     </div>
 
     <div class="content-container">
-      <el-row :gutter="20" class="chart-row">
+      <el-row :gutter="10" class="chart-row">
         <el-col :span="8">
           <el-card class="chart-card">
             <div class="chart-content">
@@ -63,7 +63,7 @@ onMounted(() => {
 
 <style scoped>
 .delivery-view {
-  padding: 20px;
+
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -86,7 +86,7 @@ onMounted(() => {
 }
 
 .chart-row {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .card-header {
@@ -100,7 +100,7 @@ onMounted(() => {
 }
 
 .card-content {
-  min-height: 200px;
+  min-height: 350px;
   height: 100%;
   display: flex;
   justify-content: flex-start;
@@ -108,7 +108,7 @@ onMounted(() => {
 }
 
 .chart-card {
-  height: 400px;
+  height: 300px;
   display: flex;
   flex-direction: column;
 }
@@ -117,7 +117,7 @@ onMounted(() => {
   height: 100%;
   width: 100%;
   flex: 1;
-  min-height: 300px;
+  min-height: 280px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -140,9 +140,9 @@ onMounted(() => {
 }
 
 @media screen and (max-width: 768px) {
-  .delivery-view {
-    padding: 10px;
-  }
+  /* .delivery-view {
+      padding: 10px;
+  } */
   
   .card-content {
     min-height: 200px;

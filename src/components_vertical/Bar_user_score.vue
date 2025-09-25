@@ -1,5 +1,10 @@
 <template>
   <div class="chart-container">
+    <div class="title-container">
+      <el-text class="mx-1" style="font-size: 16px; color: #44652a; font-weight: bold;">
+        用户累计积分（前5名 & 后5名）
+      </el-text>
+    </div>
     <div id="UserScoreBarChart"></div>
   </div>
 </template>
@@ -86,16 +91,16 @@ export default {
       }
 
       var option = {
-        title: {
-          text: "User Cumulative Points (Top 5 & Bottom 5)",
-          left: "center",
-          textStyle: {
-            color: "#44652a",
-            fontSize: 16,
-            fontWeight: "bold"
-          },
-          top: "0",
-        },
+        // title: {
+        //   text: "User Cumulative Points (Top 5 & Bottom 5)",
+        //   left: "center",
+        //   textStyle: {
+        //     color: "#44652a",
+        //     fontSize: 16,
+        //     fontWeight: "bold"
+        //   },
+        //   top: "0",
+        // },
         tooltip: {
           trigger: "axis",
           axisPointer: {
@@ -116,7 +121,7 @@ export default {
             color: "#44652a",
             interval: 0,
             rotate: 30,
-            fontSize: 10,
+            fontSize: 13,
             formatter: function(value) {
               return value.length > 4 ? value.slice(-4) : value;
             }
@@ -127,11 +132,11 @@ export default {
           name: 'Score',
           nameTextStyle: {
             color: "#44652a",
-            fontSize: 12
+            fontSize: 14
           },
           axisLabel: {
             color: "#44652a",
-            fontSize: 10
+            fontSize: 13
           }
         },
         series: [
@@ -172,7 +177,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items:center;
 }
 
 #UserScoreBarChart {
@@ -180,5 +185,10 @@ export default {
   height: 100%;
   flex: 1;
   min-height: 120px;
+}
+.title-container {
+  text-align: center;
+  margin-bottom: 10px;
+  margin-top: -10px;
 }
 </style>

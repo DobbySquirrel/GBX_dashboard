@@ -82,7 +82,7 @@
   
         const option = {
           title: {
-            text: "Box Recycle Counts (Top 10)", // Updated title
+            text: "回收次数前10的箱体ID", // Updated title
             left: "center",
             textStyle: {
               color: "#44652a",
@@ -158,29 +158,7 @@
               },
               barWidth: '60%',
               // --- Add markLine for average ---
-              markLine: {
-                silent: true, // Mark line does not interact with mouse events
-                symbol: 'none', // No symbols at the ends of the line
-                label: {
-                  show: true,
-                  formatter: 'Avg: {c}', // Display average value
-                  position: 'end', // Label at the end of the line
-                  color: 'green', // Red color for the average line label
-                  fontSize: 12,
-                  fontWeight: 'bold',
-                  position: 'start'
-                },
-                lineStyle: {
-                  color: 'green', // Red dashed line for average
-                  type: 'dashed'
-                },
-                data: [
-                  {
-                    name: 'Average',
-                    yAxis: parseFloat(averageRecycleCount) // Set y-axis value to the calculated average
-                  }
-                ]
-              }
+
             }
           ]
         };

@@ -171,7 +171,7 @@ export function setupSocketIO(httpServer, pool) {
         AND box_id NOT IN (
           SELECT box_id 
           FROM box_status_logs 
-          WHERE status = '用户已取走'
+          WHERE status = '用户已取走' 
         )
       `);
       return rows[0].in_cabinet_count;
@@ -279,13 +279,17 @@ export function setupSocketIO(httpServer, pool) {
       // 立即发送一次当前数据
       try {
         const [rows] = await pool.query(`
-          SELECT
-            phone,
-            SUM(points) AS total_points
-          FROM
-            user_credits_log
-          GROUP BY
-            phone
+SELECT
+    phone,
+    SUM(points) AS total_points
+FROM
+    user_credits_log
+WHERE
+    phone != ''
+GROUP BY
+    phone
+ORDER BY
+    total_points DESC;
         `);
         socket.emit('user_score_update', rows);
       } catch (error) {
@@ -416,13 +420,17 @@ export function setupSocketIO(httpServer, pool) {
 
         // 新增：检查用户积分数据更新
         const [userScoreRows] = await pool.query(`
-          SELECT
-            phone,
-            SUM(points) AS total_points
-          FROM
-            user_credits_log
-          GROUP BY
-            phone
+SELECT
+    phone,
+    SUM(points) AS total_points
+FROM
+    user_credits_log
+WHERE
+    phone != ''
+GROUP BY
+    phone
+ORDER BY
+    total_points DESC;
         `);
 
         const currentUserScoreData = JSON.stringify(userScoreRows);

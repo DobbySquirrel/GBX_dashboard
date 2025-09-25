@@ -7,8 +7,8 @@
       :row-class-name="tableRowClassName"
     >
       <el-table-column prop="event_time" label="Time" sortable />
-      <el-table-column prop="RFID" label="RFID" />
-      <el-table-column prop="service_id" label="service_id" />
+      <el-table-column prop="RFID" label="Box ID" />
+      <el-table-column prop="service_id" label="Service ID"  width="160" />
       <el-table-column prop="owner" label="Owner" />
     </el-table>
   </div>
@@ -54,17 +54,17 @@ export default {
     }
   },
   methods: {
-    tableRowClassName({ row, rowIndex }) {
-      let classNames = '';
-      // Only apply 'latest-row' if the row is still the first after filtering and sorting
-      if (this.sortedCards.length > 0 && row.RFID === this.sortedCards[0].RFID) {
-        classNames += ' latest-row';
-      }
-      if (row.RFID === this.latestCardRFID) {
-        classNames += ' new-row-animation';
-      }
-      return classNames.trim();
-    },
+  tableRowClassName({ row, rowIndex }) {
+  let classNames = '';
+  // 只看行索引，第一行就是最新的
+  if (rowIndex === 0) {
+    classNames += ' latest-row';
+  } 
+  if (row.RFID === this.latestCardRFID) {
+    classNames += ' new-row-animation';
+  }
+  return classNames.trim();
+},
     formatTime(timeString) {
       if (!timeString || timeString === 'N/A') return 'N/A';
       try {
@@ -82,7 +82,7 @@ export default {
           throw new Error('Invalid date format');
         }
 
-        return utcDate.toLocaleString('en-GB', {
+        return utcDate.toLocaleString('zh-CN', {
           year: 'numeric',
           month: '2-digit',
           day: '2-digit',
@@ -98,35 +98,59 @@ export default {
       }
     },
 
-    handleBoxOwnerUpdate(data) {
-      if (data && Array.isArray(data)) {
-        // Store the RFID of the current first card before updating `cards`
-        const oldFirstCardRFID = this.sortedCards.length > 0 ? this.sortedCards[0].RFID : null;
+handleBoxOwnerUpdate(data) {
+      if (data && Array.isArray(data)) {
+        // Store the RFID of the current first card before updating `cards`
+        const oldFirstCardRFID = this.sortedCards.length > 0 ? this.sortedCards[0].RFID : null;
 
-        this.cards = data.map(item => ({
-          event_time: this.formatTime(item.event_time || 'N/A'),
-          RFID: item.RFID || 'N/A',
-          owner: item.owner || 'N/A',
-          service_id: item.service_id || 'N/A',
-          product_id: item.product_id || 'N/A'
-        }));
+        this.cards = data.map(item => {
+          let displayOwner = item.owner || 'N/A';
+          
+          // 如果是drone数据，转换Owner显示名称
+          if (item.product_id === '66dabbab1837002b28b35a64') {
+            switch (item.owner) {
+              case 'Station_1':
+                displayOwner = '停机坪_1';
+                break;
+              case 'Drone_1':
+                displayOwner = '无人机';
+                break;
+              case 'station_2':
+                displayOwner = '停机坪_2';
+                break;
+              case 'recycle bin':
+                displayOwner = '回收柜';
+                break;
+              default:
+                displayOwner = item.owner || 'N/A';
+            }
+          }
 
-        // After updating cards, check if the first card in the *sorted and filtered* list has changed
-        if (this.sortedCards.length > 0 && this.sortedCards[0].RFID !== oldFirstCardRFID) {
-          if (this.animationTimeout) {
-            clearTimeout(this.animationTimeout);
-          }
+          return {
+            event_time: this.formatTime(item.event_time || 'N/A'),
+            RFID: item.RFID || 'N/A',
+            owner: displayOwner,
+            service_id: item.service_id || 'N/A',
+            product_id: item.product_id || 'N/A'
+          };
+        });
 
-          this.latestCardRFID = this.sortedCards[0].RFID;
+        // After updating cards, check if the first card in the *sorted and filtered* list has changed
+        if (this.sortedCards.length > 0 && this.sortedCards[0].RFID !== oldFirstCardRFID) {
+          if (this.animationTimeout) {
+            clearTimeout(this.animationTimeout);
+          }
 
-          this.animationTimeout = setTimeout(() => {
-            this.latestCardRFID = null;
-          }, 600);
-        }
+          this.latestCardRFID = this.sortedCards[0].RFID;
 
-        console.log('更新箱子数据:', this.cards);
-      }
-    }
+          this.animationTimeout = setTimeout(() => {
+            this.latestCardRFID = null;
+          }, 600);
+        }
+
+        console.log('更新箱子数据:', this.cards);
+      }
+    }
   },
   mounted() {
     if (!socket.connected) {
@@ -147,14 +171,14 @@ export default {
 <style>
 .table-display {
   margin: 0px;
-  height: 40vh;
+  height: 30vh;
   width: 100%;
 }
 
 .el-table {
   --el-table-header-bg-color: #fefffe;
   --el-table-row-hover-bg-color: #f5faf7;
-  font-size: 10px;
+  font-size: 15px;
   width: 100% !important;
 }
 
@@ -162,12 +186,12 @@ export default {
   background-color: #f5f7fa;
   color: #606266;
   font-weight: bold;
-  font-size: 10px;
+  font-size: 15px !important;
 }
 
 .el-table td {
   color: #606661;
-  font-size: 10px;
+  font-size: 13px !important;
 }
 
 .el-table__row {

@@ -2,7 +2,7 @@
   <div class="chart-container">
     <div class="title-container">
       <el-text class="mx-1" style="font-size: 16px; color: #44652a; font-weight: bold;"
-        >Let's find the missing box!</el-text
+        >寻找丢失的箱子</el-text
       >
     </div>
     <div id="container_missing_box" ref="missingBoxMap"></div>
@@ -41,14 +41,21 @@ export default {
       return Object.values(latest);
     },
     // 合并 props 传入的数据和从 Socket.IO 获取的数据，并进行 RFID 去重，用于图表展示
+    // 合并 props 传入的数据和从 Socket.IO 获取的数据，并进行 RFID 去重，用于图表展示
     allPointsData() {
-      return this.latestMissingBoxes.map(item => {
+      // 添加默认的丢失箱子点
+      const defaultPoint = [113.47485592126251, 22.8884475272273, 'DEFAULT_BOX_001'];
+      const defaultPoint2 = [113.47585595126251, 22.891885272273, 'DEFAULT_BOX_002'];
+      
+      const otherPoints = this.latestMissingBoxes.map(item => {
         const longitude = parseFloat(item?.longitude || item?.Longitude);
         const latitude = parseFloat(item?.latitude || item?.Latitude);
         return isNaN(longitude) || isNaN(latitude) || !item?.RFID
           ? null
           : [longitude, latitude, item.RFID];
       }).filter(Boolean); // 移除无效数据点
+      
+      return [defaultPoint,defaultPoint2, ...otherPoints];
     },
   },
   methods: {
@@ -109,6 +116,10 @@ export default {
       this.myChart.setOption({
         legend: {
           data: [`丢失箱子 (${chartData.length})`],
+          textStyle: {
+    color: '#333',
+    fontSize: 15, // 这里设置字体大小，比如18
+  },
         },
         series: [
           {
@@ -120,7 +131,7 @@ export default {
             symbolSize: 15,
             itemStyle: {
               color: 'red',
-              opacity: 0.8,
+              opacity: 0.7,
             },
             encode: {
               tooltip: 2,
@@ -164,7 +175,7 @@ export default {
           },
           geo: {
             map: 'hkust_map_missing_box',
-            roam: true,
+            // roam: true,
             zoom: 1.5,
             label: {
               show: true,
@@ -261,21 +272,28 @@ export default {
 <style scoped>
 .chart-container {
   width: 100%;
-  height: 100%;
+  height: 95%;
   display: flex;
   flex-direction: column;
   max-height: 100%;
+  padding-right: 30px;
+  margin-bottom: 10px;
+  align-items: center; 
+
 }
 
 #container_missing_box {
   width: 100%;
-  height: 100%;
+  height: 95%;
   flex: 1;
-  min-height: 290px;
+  margin-bottom: 10px;
+  min-height: 270px;
 }
 
 .title-container {
   text-align: center;
+  width: 100%;
   margin-bottom: 10px;
+  margin-top: -10px; /* 向上移动标题 */
 }
 </style>

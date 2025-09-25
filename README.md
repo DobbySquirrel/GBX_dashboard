@@ -1,29 +1,13 @@
 # gbx_vis
 
-This template should help get you started developing with Vue 3 in Vite.
+# 列出所有screen会话
+screen -ls
 
-## Recommended IDE Setup
+# 如果存在，关闭现有会话
+screen -X -S gbx_full quit
+screen -X -S gbx_server quit
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+#先跑开server
+npm run start_server
+#再跑开前端
+npm run start

@@ -17,7 +17,16 @@
       <div class="right-panels">
         <!-- 订单显示面板 -->
         <div class="card-content">
+          <div class="title-container">
+            <el-text class="mx-1" style="font-size: 16px; color: #44652a; font-weight: bold;">无人车</el-text>
+          </div>
           <OrderDisplayPanel pageType="vehicle" />
+        </div>
+        <div class="card-content2">
+          <div class="title-container">
+            <el-text class="mx-1" style="font-size: 16px; color: #44652a; font-weight: bold;">机柜</el-text>
+          </div>
+          <CardDisplay />
         </div>
       </div>
     </div>
@@ -26,6 +35,7 @@
 
 <script setup>
 // 导入所需的组件和API
+import CardDisplay from '@/components_vertical/CardDisplay.vue';
 import Header from '@/components_vertical/Header.vue';
 import { ref, onUnmounted } from 'vue';
 import live_MapDisplay from '@/components_vertical/live_MapDisplay.vue';
@@ -59,7 +69,7 @@ h1 {
 
 .content-container {
   display: grid;
-  grid-template-columns: 2fr 1fr; /* 左侧地图占2份，右侧面板占1份 */
+  grid-template-columns: 1.5fr 1fr; /* 左侧地图占1.5份，右侧面板占1份 */
   gap: 20px;
   flex: 1;
 }
@@ -78,13 +88,13 @@ h1 {
 
 .card-content {
   min-height: 200px;
-  height: calc(100% - 10px);
+  height: calc(30% - 10px);
   overflow: hidden;
 }
 
 .card-content2 {
   min-height: 100px;
-  height: calc(20% + 40px);
+  height: calc(20% + 60px);
   overflow: hidden;
 }
 
@@ -143,5 +153,31 @@ h1 {
   .map-container {
     height: 500px;
   }
+  .right-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* 或 0，间距更小 */
+  /* height: 100%;  // 删除这行 */
+  /* align-items: flex-start; // 删除这行 */
+}
+.title-container {
+  text-align: center;
+  width: 100%;
+  margin-bottom: 10px;
+  margin-top: -10px;
+}
+
+.card-content,
+.card-content2 {
+  min-height: unset;
+  height: auto;
+  overflow: visible;
+  display: block;
+  align-items: unset;
+  flex: unset;
+  margin: 0;
+  padding: 0;
+}
+
 }
 </style> 

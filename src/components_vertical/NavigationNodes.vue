@@ -28,10 +28,10 @@ const router = useRouter();
 const route = useRoute();
 
 const nodes = [
-  { label: 'Vehicle', icon: Van, route: '/vehicle' },
-  { label: 'Drone', icon: Place, route: '/drone' },
-  { label: 'Delivery', icon: Box, route: '/delivery' },
-  { label: 'Environment', icon: School, route: '/environment' }
+  { label: '无人车', icon: Van, route: '/vehicle' },
+  { label: '外卖员', icon: Box, route: '/delivery' },
+  { label: '无人机', icon: Place, route: '/drone' },
+  { label: '环境', icon: School, route: '/environment' }
 ];
 
 const isActive = (path) => {

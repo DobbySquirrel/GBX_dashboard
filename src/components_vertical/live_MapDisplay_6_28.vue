@@ -54,23 +54,39 @@ export default {
       [168.00, 285.50]  // Drone end point
     ];
     const vector1PathPoints = [
+      [97.50, 591.00], // 起始点
       [120.00, 571.00], // 转折点
+      [134.50, 555.00], // 转折点
+      [147.50, 540.00], // 转折点
       [156.00, 523.00], // 转折点
+      [162.50, 501.50], // 转折点
+      [169.00, 482.50], // 转折点
       [179.50, 470.50], // 转折点
       [203.00, 457.00], // 转折点
+      [237.00, 443.00], // 转折点
       [258.50, 431.00], // 转折点
       [267.00, 418.50], // 转折点
+      [267.00, 397.00], // 转折点
+      [258.50, 378.00], // 转折点
       [252.00, 356.50], // 转折点
       [237.00, 344.00], // 转折点
       [220.00, 344.00], // 转折点
       [203.00, 367.50], // 转折点
       [198.24, 387.48], // 转折点
+      [190.00, 397.00], // 转折点
+      [183.41, 404.62], // 转折点
       [169.00, 412.00], // 转折点
+      [169.00, 412.00], // 转折点
+      [161.65, 418.00], // 转折点
       [156.00, 418.50], // 转折点
       [144.17, 419.55], // 转折点
+      [134.50, 397.00], // 转折点
+      [134.50, 397.00], // 转折点
       [122.77, 380.03], // 转折点
       [120.00, 367.50], // 转折点
+      [117.47, 356.06], // 转折点
       [120.00, 337.50], // 转折点
+      [120.00, 337.50]  // 结束点
     ];
 
     
@@ -265,7 +281,25 @@ return {
       // Add Indoor Car series if pageType is 'car', 'vehicle', or 'all'
       if (this.pageType === 'car' || this.pageType === 'vehicle' || this.pageType === 'all') {
         baseSeries.push(
-
+          // Indoor Car historical route (dashed line)
+          {
+            name: 'Indoor Car Route',
+            type: 'lines',
+            coordinateSystem: 'geo',
+            geoIndex: 0,
+            lineStyle: {
+              color: '#5470c6',
+              width: 2,
+              opacity: 0.6,
+              curveness: 0.2,
+              type: 'dashed'
+            },
+            data: this.indoorCarHistory.slice(0, -1).map((item, index) => {
+              return {
+                coords: [this.indoorCarHistory[index], this.indoorCarHistory[index + 1]]
+              };
+            }).filter(item => item.coords[0] && item.coords[1])
+          },
           // Indoor Car current position (scatter with custom symbol)
           {
             type: 'scatter',
@@ -438,7 +472,15 @@ return {
     series[carPositionIndex].data = [this.indoorCarPosition];
   }
   
-
+  // 找到室内车历史轨迹系列的索引
+  const carRouteIndex = series.findIndex(s => s.name === 'Indoor Car Route');
+  if (carRouteIndex !== -1) {
+    series[carRouteIndex].data = this.indoorCarHistory.slice(0, -1).map((item, index) => {
+      return {
+        coords: [this.indoorCarHistory[index], this.indoorCarHistory[index + 1]]
+      };
+    }).filter(item => item.coords[0] && item.coords[1]);
+  }
 
   // 只更新变化的部分
   this.indoorCarChart.setOption({
@@ -449,10 +491,7 @@ return {
     /**
      * Subscribes to real-time updates from the WebSocket server based on pageType.
      */
-    /**
-     * Subscribes to real-time updates from the WebSocket server based on pageType.
-     */
-     subscribeToRealTimeUpdates() {
+    subscribeToRealTimeUpdates() {
       if (!socket.connected) {
         socket.connect();
       }
@@ -463,35 +502,6 @@ return {
       if (this.pageType === 'drone' || this.pageType === 'all') {
         socket.on('drone_state_update', (data) => {
           console.log('收到无人机数据更新:', data);
-          
-          // 解析无人机数据的时间和百分比信息
-          if (data && data.length > 0) {
-            const latestData = data[0];
-            console.log('=== 无人机数据解析 ===');
-            console.log('原始数据:', latestData);
-            
-            // 解析时间信息
-            if (latestData.created_at) {
-              const timestamp = new Date(latestData.created_at);
-              console.log('时间:', timestamp.toLocaleString('zh-CN'));
-              console.log('时间戳:', timestamp.getTime());
-            }
-            
-            // 解析百分比信息
-            if (latestData.State !== undefined) {
-              const percentage = parseFloat(latestData.State);
-              console.log('进度百分比:', percentage.toFixed(2) + '%');
-              console.log('进度状态:', percentage >= 100 ? '已完成' : '运送中');
-            }
-            
-            // 解析其他可能的状态信息
-            if (latestData.Status !== undefined) {
-              console.log('状态值:', latestData.Status);
-            }
-            
-            console.log('====================');
-          }
-          
           if (data && data.length > 0) {
             this.updateDronePosition(data);
           }
@@ -502,45 +512,6 @@ return {
       if (this.pageType === 'car' || this.pageType === 'vehicle' || this.pageType === 'all') {
         socket.on('indoor_car_state_update', (data) => {
           console.log('收到室内车数据更新:', data);
-          
-          // 解析室内车数据的时间和百分比信息
-          if (data && data.length > 0) {
-            const latestData = data[0];
-            console.log('=== 室内车数据解析 ===');
-            console.log('原始数据:', latestData);
-            
-            // 解析时间信息
-            if (latestData.created_at) {
-              const timestamp = new Date(latestData.created_at);
-              console.log('时间:', timestamp.toLocaleString('zh-CN'));
-              console.log('时间戳:', timestamp.getTime());
-            }
-            
-            // 解析百分比信息
-            if (latestData.Status !== undefined) {
-              const percentage = parseFloat(latestData.Status);
-              console.log('进度百分比:', percentage.toFixed(2) + '%');
-              console.log('进度状态:', percentage >= 100 ? '已完成' : '运送中');
-            }
-            
-            // 解析其他可能的状态信息
-            if (latestData.State !== undefined) {
-              console.log('状态值:', latestData.State);
-            }
-            
-            // 解析其他字段（如果存在）
-            if (latestData.id !== undefined) {
-              console.log('数据ID:', latestData.id);
-            }
-            
-            if (latestData.updated_at) {
-              const updateTime = new Date(latestData.updated_at);
-              console.log('更新时间:', updateTime.toLocaleString('zh-CN'));
-            }
-            
-            console.log('====================');
-          }
-          
           if (data && data.length > 0) {
             this.updateIndoorCarPosition(data);
           }
@@ -638,8 +609,15 @@ return {
             center: center,
           },
           legend: {
-  show: false
-},
+            orient: 'vertical',
+            right: '1%',
+            top: '1%',
+            data: that.getLegendData(),
+            textStyle: {
+              color: '#333',
+              fontSize: 15,
+            }
+          },
           series: that.getSeriesBasedOnPageType()
         };
         myChart.setOption(option);

@@ -1,5 +1,10 @@
 <template>
   <div class="chart-container">
+    <div class="title-container">
+      <el-text class="mx-1" style="font-size: 16px; color: #44652a; font-weight: bold;">
+        箱体状态
+      </el-text>
+    </div>
     <div id="BoxStatusChart"></div>
   </div>
 </template>
@@ -73,16 +78,16 @@ export default {
       });
 
       var option = {
-        title: {
-          text: "Boxes Status",
-          left: "center",
-          textStyle: {
-            color: "#44652a",
-            fontSize: 16,
-            fontWeight: "bold"
-          },
-          top: "0",
-        },
+        // title: {
+        //   text: "Boxes Status",
+        //   left: "center",
+        //   textStyle: {
+        //     color: "#44652a",
+        //     fontSize: 16,
+        //     fontWeight: "bold"
+        //   },
+        //   top: "0",
+        // },
         tooltip: {
           trigger: "axis",
           axisPointer: {
@@ -103,7 +108,8 @@ export default {
             color: "#44652a",
             interval: 0,
             rotate: 30,
-            fontSize: 10
+            fontSize: 12,
+          
           }
         },
         yAxis: {
@@ -143,14 +149,19 @@ export default {
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-}
+  align-items: center; 
 
+}
+.title-container {
+  text-align: center;
+  margin-bottom: 10px;
+  margin-top: -10px;
+}
 #BoxStatusChart {
   width: 100%;
   height: 100%;
   flex: 1;
   min-height: 120px;
+  align-items: center; 
 }
 </style>

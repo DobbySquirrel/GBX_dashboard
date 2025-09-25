@@ -1,2 +1,0 @@
-event_time,product_id,device_id,Number,Area,BoxState,RFID,ReceiverPhone,OrderNumber,ReceiverName,SenderName,Owner,Converted_RFID
-20241128T143954Z,66dd22421837002b28b3a3f3,66dd22421837002b28b3a3f3_OutdoorDeliveryCar_test,OD123456789,10A,In Use,GBX00002,4321,ORD123456789,4321,1234,outdoor_car,47 42 58 30 30 30 30 32 00 00 00 00 00 00 00 00

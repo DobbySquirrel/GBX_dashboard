@@ -93,7 +93,7 @@ export default {
 
       const option = {
         title: {
-          text: 'Environmental Benefits',
+          text: '碳排放增益对比',
           left: 'center',
           textStyle: {
             color: '#44652a',
@@ -103,17 +103,25 @@ export default {
           top: 0
         },
         xAxis: [{
-          data: ['Recycling Box', 'Tree Leaf', 'Paper Box'],
-          axisTick: { show: false },
-          axisLine: { show: false },
-          axisLabel: {
-            margin: 20,
-            color: '#44652a',
-            fontSize: 12,
-            interval: 0,
-            padding: [0, 0, 0, 0]
-          }
-        }],
+  name: '等价类型',
+  nameLocation: 'center',
+  nameGap: 35,
+  nameTextStyle: {
+    color: '#44652a',
+    fontSize: 12,
+    fontWeight: 'bold'
+  },
+  data: ['Recycling Box', 'Tree Leaf', 'Paper Box'],
+  axisTick: { show: false },
+  axisLine: { show: false },
+  axisLabel: {
+    margin: 20,
+    color: '#44652a',
+    fontSize: 12,
+    interval: 0,
+    padding: [0, 0, 0, 0]
+  }
+}],
         yAxis: {
           splitLine: { show: false },
           axisTick: { show: false },
@@ -141,7 +149,7 @@ export default {
                 value: this.totalRecycledBoxes || 0,
                 symbol: 'image://' + boxDataURI,
                 symbolRepeat: true,
-                symbolSize: ['30%', '20%'],
+                symbolSize: ['50%', '5%'],
                 symbolMargin: '-20%',
                 animationDelay: function (dataIndex, params) {
                   return params.index * 30;
@@ -215,8 +223,8 @@ export default {
         grid: {
           left: '3%',
           right: '5%',
-          bottom: '0%',
-          top: '20%',
+          bottom: '15%',
+          top: '12%',
           containLabel: true
         },
       };

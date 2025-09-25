@@ -4,9 +4,9 @@
       <div class="data-item">
         <img :src="treeDataURI" class="data-icon" alt="碳排放图标" />
         <div class="data-content">
-          <div class="data-label">碳排放减少量</div>
+          <div class="data-label">降碳量(约等于)</div>
           <div class="data-value">
-            {{ carbonReduction.toLocaleString('zh-CN') }}leaves
+            {{ carbonReduction.toLocaleString('zh-CN') }}片
             <span class="box-count">({{ totalBoxCount }}箱)</span>
           </div>
         </div>
@@ -15,15 +15,15 @@
       <div class="data-item">
         <el-icon class="data-icon" color="#76c850"><Box /></el-icon>
         <div class="data-content">
-          <div class="data-label">在柜包裹数量</div>
-          <div class="data-value">{{ inCabinetCount }}</div>
+          <div class="data-label">包裹总数</div>
+          <div class="data-value">{{ totalBoxCount }}</div>
         </div>
       </div>
       
       <div class="data-item">
         <el-icon class="data-icon" color="#76c850"><Timer /></el-icon>
         <div class="data-content">
-          <div class="data-label">箱子平均回收周期</div>
+          <div class="data-label">平均单箱回收周期</div>
           <div class="data-value">{{ averageRecycleCycle !== 0 ? averageRecycleCycle + ' h' : 'N/A' }}</div>
         </div>
       </div>
@@ -31,15 +31,15 @@
       <div class="data-item">
         <el-icon class="data-icon" color="#76c850"><Calendar /></el-icon>
         <div class="data-content">
-          <div class="data-label">今日新投放箱子</div>
-          <div class="data-value">{{ dailyNewBoxes }}</div>
+          <div class="data-label">平均单箱回收次数</div>
+          <div class="data-value">{{ averageRecycleCount !== 0 ? averageRecycleCount : 'N/A' }}</div>
         </div>
       </div>
     </div>
     
     <div class="data-note">
-      <p>注: 碳排放减少量基于每个绿色包装盒可循环使用100次计算（保守估计）</p>
-      <p>与同等大小的一次性纸箱相比，每循环使用一次绿色包装盒，减少碳排放量约等于2片树叶的固碳量</p>
+      <p>注: 碳排放减少量基于每个慧达箱可循环使用100次计算（保守估计）</p>
+      <p>与同等大小的一次性纸箱相比，每循环使用一次慧达箱，减少碳排放量约等于2片树叶的固碳量</p>
     </div>
   </div>
 </template>
@@ -53,7 +53,8 @@ import socket from '../api/socket.js';
 const totalBoxCount = ref(0);
 const averageRecycleCycle = ref(0);
 const inCabinetCount = ref(0);
-const dailyNewBoxes = ref(0);
+const averageRecycleCount = ref(0);
+const boxRecycleCountsData = ref([]);
 
 // 处理在柜包裹数量更新
 const handleCabinetStatusUpdate = (data) => {
@@ -65,16 +66,7 @@ const handleCabinetStatusUpdate = (data) => {
   }
 };
 
-// 处理每日新箱子数量更新
-const handleDailyNewBoxesUpdate = (data) => {
-  try {
-    dailyNewBoxes.value = data.dailyNewBoxes;
-    console.log('Updated daily new boxes count:', dailyNewBoxes.value);
-  } catch (error) {
-    console.error('Error processing daily new boxes data:', error);
-  }
-};
-
+// 处理箱子回收次数数据更新
 const handleRecycleCountsUpdate = (data) => {
   try {
     let count = 0;
@@ -82,9 +74,20 @@ const handleRecycleCountsUpdate = (data) => {
       count = data.reduce((sum, item) => {
         return sum + (parseInt(item.recycle_count) || 0);
       }, 0);
+      
+      // 计算平均单箱回收次数
+      if (data.length > 0) {
+        const totalRecycleCount = data.reduce((sum, item) => sum + (parseInt(item.recycle_count) || 0), 0);
+        averageRecycleCount.value = (totalRecycleCount / data.length).toFixed(2);
+      } else {
+        averageRecycleCount.value = 0;
+      }
+      
+      boxRecycleCountsData.value = data;
     }
     totalBoxCount.value = count;
     console.log('Updated total box count:', totalBoxCount.value);
+    console.log('Updated average recycle count:', averageRecycleCount.value);
   } catch (error) {
     console.error('Error processing recycle counts data:', error);
   }
@@ -116,10 +119,6 @@ onMounted(() => {
     // 订阅在柜包裹数量
     socket.emit('subscribe_cabinet_status');
     socket.on('cabinet_status_update', handleCabinetStatusUpdate);
-
-    // 订阅每日新箱子数量
-    socket.emit('subscribe_daily_new_boxes');
-    socket.on('daily_new_boxes_update', handleDailyNewBoxesUpdate);
   } else {
     console.error('Socket.IO instance not found');
   }
@@ -130,7 +129,6 @@ onBeforeUnmount(() => {
     socket.off('box_recycle_counts_update', handleRecycleCountsUpdate);
     socket.off('average_recycle_cycle_update', handleAverageRecycleCycleUpdate);
     socket.off('cabinet_status_update', handleCabinetStatusUpdate);
-    socket.off('daily_new_boxes_update', handleDailyNewBoxesUpdate);
   }
 });
 </script>

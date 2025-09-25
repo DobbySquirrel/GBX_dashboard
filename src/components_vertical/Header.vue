@@ -15,7 +15,7 @@
                 <span style="color: #44652a">for HKUST(GZ) </span>
                 <span style="color: #76c850">2025</span>
               </h2>
-              <hr style="border-top: 2px solid #cbebc4; width: 90%; margin: 5px 0 0 5px" />
+              <hr style="border-top: 2px solid #cbebc4; width: 50%; margin: 5px 0 0 5px" />
             </div>
 
             <!-- 替换原来的Statistic Cards Layout为Navigation Nodes -->

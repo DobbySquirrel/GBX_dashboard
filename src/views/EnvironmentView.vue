@@ -172,7 +172,7 @@ h1 {
 .data-card2 {
   margin-bottom: 0px;
   height: 100%;
-  min-height: 250px;
+  min-height: 300px;
 }
 
 .card-header {
@@ -200,7 +200,7 @@ h1 {
 }
 
 .chart-container {
-  height: 250px;
+  height: 300px;
   width: 100%;
 }
 
@@ -222,7 +222,7 @@ h1 {
   }
 
   .chart-container {
-    height: 250px;
+    height: 300px;
   }
 }
 </style>

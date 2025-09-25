@@ -6,11 +6,11 @@
       :max-height="tableHeight"
       :row-class-name="tableRowClassName"
     >
-      <el-table-column prop="log_time" label="Log Time" sortable />
+      <el-table-column prop="log_time" label="Time" sortable />
       <el-table-column prop="box_id" label="Box ID" />
       <el-table-column prop="status" label="Status" />
       <el-table-column prop="location" label="Location" />
-      </el-table>
+    </el-table>
   </div>
 </template>
 
@@ -22,7 +22,7 @@ export default {
   data() {
     return {
       cards: [],
-      tableHeight: '30vh' // Keep this if you want a fixed height for the table
+      tableHeight: '35vh' // Keep this if you want a fixed height for the table
     };
   },
   computed: {
@@ -47,6 +47,52 @@ export default {
       }
       return '';
     },
+    /**
+ * Location映射方法
+ * @param {string} location - 原始location值
+ * @returns {string} 映射后的location值
+ */
+mapLocation(location) {
+  const mapping = {
+    'CABBIG': 'CABBIG机柜',
+    'R001': 'R001骑手',
+    'OPS_001': 'OPS_001运营'
+  };
+  return mapping[location] || location; // 如果没有映射，返回原始值
+},
+
+    /**
+     * 格式化时间，将世界时间转换为中国时间
+     * @param {string} timeString - 时间字符串，格式如 "2025-06-23T07:43:41.000Z"
+     * @returns {string} 格式化后的中国时间
+     */
+    formatTime(timeString) {
+      if (!timeString || timeString === 'N/A') return 'N/A';
+      try {
+        // 解析ISO 8601格式的时间字符串
+        const date = new Date(timeString);
+        
+        // 检查日期是否有效
+        if (isNaN(date.getTime())) {
+          throw new Error('Invalid date format');
+        }
+
+        // 转换为中国时区时间并格式化
+        return date.toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+          timeZone: 'Asia/Shanghai'
+        }).replace(',', '');
+      } catch (error) {
+        console.error('Error formatting time:', error);
+        return timeString;
+      }
+    },
 
     /**
      * Handles incoming box_status_logs_update from the WebSocket.
@@ -56,10 +102,10 @@ export default {
       if (data && Array.isArray(data)) {
         // Map the raw data to the format expected by the table
         this.cards = data.map(item => ({
-          log_time: item.timestamp || 'N/A', 
+          log_time: this.formatTime(item.timestamp || 'N/A'), 
           box_id: item.box_id || 'N/A',
           status: item.status || 'N/A',
-          location: item.owner_id || 'N/A',
+          location: this.mapLocation(item.owner_id || 'N/A'),
           // Add other relevant fields from box_status_logs
         }));
         // console.log('更新箱子状态日志数据:', this.cards);
@@ -87,27 +133,28 @@ export default {
 <style>
 .table-display {
   margin: 0px;
-  height: 30vh;
+  height: 40vh;
   width: 100%; /* Ensure table container takes full width */
 }
 
 .el-table {
   --el-table-header-bg-color: #fefffe;
   --el-table-row-hover-bg-color: #f5faf7;
-  font-size: 10px;
+  font-size: 15px;
   width: 100% !important; /* Force table width to 100% */
+  max-height: 35vh; 
 }
 
 .el-table th {
   background-color: #f5f7fa;
   color: #606266;
   font-weight: bold;
-  font-size: 10px;
+  font-size: 15px !important;;
 }
 
 .el-table td {
   color: #606661;
-  font-size: 10px;
+  font-size: 13px !important;;
 }
 
 /* Ensure table rows take full width */

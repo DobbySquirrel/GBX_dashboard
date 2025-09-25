@@ -90,7 +90,7 @@ export default {
 
       const option = {
         title: {
-          text: "Package Quantity Trend (Bound Orders)",
+          text: "绑定订单的包裹数量趋势",
           left: "center",
           textStyle: {
             color: "#44652a",

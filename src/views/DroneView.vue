@@ -60,7 +60,7 @@ h1 {
 
 .content-container {
   display: grid;
-  grid-template-columns: 2fr 1fr; /* 左侧地图占2份，右侧面板占1份 */
+  grid-template-columns: 1.5fr 1fr; /* 左侧地图占1.5份，右侧面板占1份 */
   gap: 20px;
   flex: 1;
 }
